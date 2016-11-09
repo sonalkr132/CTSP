@@ -28,13 +28,16 @@ public class CustomersAllocation {
   }
   
   public ArrayList<Integer> sort(ArrayList<Integer> facilites){
-    //sorts in increasing order
     Integer[] dup_facilites_set = facilites_set;
     
+    //sorts in increasing order
     Arrays.sort(dup_facilites_set, new NumberOfCustomersComparator());
-
+    
     ArrayList<Integer> sorted_facilites = new ArrayList<Integer>();
-    for(int i = (number_of_facilites - 1); i >= 0 ; i++){
+    
+    //itr over sorted facilites and add facility to sorted list
+    //when matching facility in list was found
+    for(int i = (number_of_facilites - 1); i >= 0 ; i--){
       int facility = dup_facilites_set[i];
       if(facilites.contains(facility)) sorted_facilites.add(facility);
     }
