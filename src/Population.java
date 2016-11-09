@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Population {
@@ -51,9 +53,8 @@ public class Population {
   
   public void next_generation(){
     selection();
-    //crossover();
-    
-    //mutation();
+    crossover();
+    mutation();
     set_best_score();
   }
   
@@ -63,8 +64,8 @@ public class Population {
     Chromosome[] parents = new Chromosome[population_size];
     parents[0] = current_best_chromosome;
     parents[1] = alltime_best_chromosome;
-    parents[2] = alltime_best_chromosome;
-    parents[3] = alltime_best_chromosome;
+    parents[2] = alltime_best_chromosome.mutate(cust_allocation, prize);
+    parents[3] = alltime_best_chromosome.mutate(cust_allocation, prize);
 
     set_roulette();
 
@@ -74,6 +75,62 @@ public class Population {
     }
 
     chromosomes = parents;
+  }
+  
+  public void mutation(){
+    for(int i = 0; i < population_size; i++) {
+      if(Math.random() < mutation_prob) {
+        chromosomes[i] = chromosomes[i].mutate(cust_allocation, prize);
+        i--;
+      }
+    }
+  }
+  
+  public void crossover(){
+    ArrayList<Integer> queue = new ArrayList<Integer>();
+    
+    for(int i=0; i< population_size; i++) {
+      if( Math.random() < crossover_prob ) {
+        queue.add(i);
+      }
+    }
+
+    Collections.shuffle(queue);
+    for(int i = 0, j = queue.size() -1 ; i < j; i += 2) {
+      do_crossover(queue.get(i), queue.get(i + 1));
+    }
+  }
+  
+  private void do_crossover(int x, int y){
+    Chromosome parent1 = chromosomes[x];
+    Chromosome parent2 = chromosomes[y];
+    
+    Random rand = new Random();
+    ArrayList<Integer> smaller_gene = get_smaller_gene(parent1.genes, parent2.genes);
+    int smaller_size = smaller_gene.size();
+    int m = rand.nextInt(smaller_size);
+    for(int i = m; i < smaller_size; i++){
+      int tmp1 = parent1.genes.remove(i);
+      int tmp2 = parent2.genes.remove(i);
+      parent1.genes.add(i, tmp2);
+      parent2.genes.add(i, tmp1);
+    }
+    
+    //copy longer parent to child
+    ArrayList<Integer> larger_gene = get_larger_gene(parent1.genes, parent2.genes);
+    int larger_size = larger_gene.size();
+    for(int i = smaller_size; i < larger_size; i++){
+      int tmp = larger_gene.remove(i);
+      smaller_gene.add(tmp);
+    }
+  }
+  
+  private ArrayList<Integer> get_smaller_gene(ArrayList<Integer> a, ArrayList<Integer> b){
+    return (a.size() > b.size() ? b : a);
+  }
+  
+  private ArrayList<Integer> get_larger_gene(ArrayList<Integer> a, ArrayList<Integer> b){
+    return (a.size() < b.size() ? b : a);
   }
  
   //evaluates the best score of current population and changes

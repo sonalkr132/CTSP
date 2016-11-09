@@ -5,23 +5,30 @@ import java.util.Random;
 
 public class Chromosome {
   public double score;
-  public int prize, number_of_facilites;
+  public int collected_prize;
   ArrayList<Integer> genes;
+  Facilites facilites;
 
-  Chromosome(CustomersAllocation cust_allocation, Facilites facilites, int prize){
+  Chromosome(CustomersAllocation cust_allocation, Facilites _facilites, int prize){
     genes = new ArrayList<Integer>();
+    facilites = _facilites;
     ArrayList<Integer> facilites_set = new ArrayList<Integer> ();
     for(int i = 0; i < facilites.number_of_facilites; i++) facilites_set.add(i);
  
-    int tmp_score = 0;
-    int last_facility = pick_next_facility(facilites_set);
-    while(tmp_score < prize){
-      int cur_facility = pick_next_facility(facilites_set);
-      tmp_score += facilites.map[last_facility][cur_facility];
+    int collected_prize = 0;
+    while(collected_prize < prize){
+      int picked_facility = pick_next_facility(facilites_set);
+      collected_prize += cust_allocation.customers_per_facility[picked_facility];
     }
     
-    shuffleArray(genes);
+    shuffle_array(genes);
     score = evaluate(facilites.map);
+  }
+  
+  Chromosome(double _score, int _prize, ArrayList<Integer> _genes){
+    score = _score;
+    collected_prize = _prize;
+    genes = _genes;
   }
   
   private int pick_next_facility(ArrayList<Integer> facilites_set){
@@ -43,7 +50,7 @@ public class Chromosome {
     return sum;
   }
   
-  private void shuffleArray(ArrayList<Integer> a) {
+  private void shuffle_array(ArrayList<Integer> a) {
     int n = a.size() ;
     Random random = new Random();
     random.nextInt();
@@ -63,28 +70,44 @@ public class Chromosome {
     ArrayList<Integer> unvisited_facilites = unvisited_facilites();
     unvisited_facilites = ca.sort(unvisited_facilites);
     
-    while(score < prize){
-      genes.add(unvisited_facilites.get(0));
+    while(collected_prize < prize){
+      int facility = unvisited_facilites.get(0);
+      genes.add(facility);
+      collected_prize += ca.customers_per_facility[facility];
       unvisited_facilites.remove(0);
     }
+    
+    score = evaluate(facilites.map);
   }
   
   private void remove_duplicates(){
     ArrayList<Integer> dup = new ArrayList<Integer>();
-    Iterator iterator = genes.iterator();
+    Iterator<Integer> iterator = genes.iterator();
     while(iterator.hasNext()){
       int gene = (int) iterator.next();
       if(!dup.contains(gene)) dup.add(gene);
     }
+    
+    genes = dup;
   }
   
   private ArrayList<Integer> unvisited_facilites(){
     ArrayList<Integer> unvisited_facilites = new ArrayList<Integer> ();
-    int[] facilites_set = new int[number_of_facilites];
-    for(int i = 0; i < number_of_facilites; i++) {
+    for(int i = 0; i < facilites.number_of_facilites; i++) {
       while(!genes.contains(i)) unvisited_facilites.add(i);
     }
     
     return unvisited_facilites;
+  }
+  
+  public Chromosome mutate(CustomersAllocation cust_allocation, int prize){
+    Chromosome clone = new Chromosome(score, collected_prize, genes);
+    Random rand = new Random();
+    int idx = rand.nextInt(genes.size());
+    
+    int facility = clone.genes.remove(idx);
+    clone.collected_prize -= cust_allocation.customers_per_facility[facility];
+    recover(prize, cust_allocation);
+    return clone;
   }
 }

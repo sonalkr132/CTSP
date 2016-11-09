@@ -2,7 +2,7 @@
 
 public class CustomersAllocation {
   public int[][]allocation;
-  int[] customers_per_facility;
+  public int[] customers_per_facility;
   Integer[] facilites_set;
   public int number_of_customers, number_of_facilites;
   
@@ -18,6 +18,7 @@ public class CustomersAllocation {
   public void allocate_customers(){
     Random rand = new Random();
     
+    facilites_set = new Integer[number_of_facilites];
     for(int i =0; i < number_of_facilites; i++) facilites_set[i] = Integer.valueOf(i);
     for(int i = 0; i < number_of_customers; i++){
       int idx = rand.nextInt(number_of_facilites);
