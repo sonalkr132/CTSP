@@ -37,7 +37,6 @@ public class Population {
   
   public void allocate_customers(){
     cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
-    cust_allocation.allocate_customers();
   }
     
    //Intializes chromosomes with random chromosomes

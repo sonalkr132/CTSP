@@ -20,7 +20,6 @@ public class Chromosome {
       int picked_facility = pick_next_facility(facilites_set);
       collected_prize += cust_allocation.customers_per_facility[picked_facility];
     }
-    
     shuffle_array(genes);
     score = evaluate(facilites.map);
   }
@@ -34,9 +33,9 @@ public class Chromosome {
   private int pick_next_facility(ArrayList<Integer> facilites_set){
     Random rand = new Random();
     int idx = rand.nextInt(facilites_set.size());
-    genes.add(facilites_set.get(idx));
-    facilites_set.remove(idx);
-    return idx;
+    int facility = facilites_set.remove(idx);
+    genes.add(facility);
+    return facility;
   }
   
   //Evaluates the total sum of distances between the genes/points of the chromosome
