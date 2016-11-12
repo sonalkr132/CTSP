@@ -168,12 +168,10 @@ public class Population {
       }
     }
     
-    Chromosome c = chromosomes[current_best_idx];
-    current_best_chromosome = new Chromosome(c.score, c.collected_prize, c.genes, c.facilites);
+    current_best_chromosome = chromosomes[current_best_idx];
   
     if (alltime_best_chromosome == null || best_score > current_best){
-      c = chromosomes[current_best_idx];
-      alltime_best_chromosome = new Chromosome(c.score, c.collected_prize, c.genes, c.facilites);
+      alltime_best_chromosome = chromosomes[current_best_idx];
       best_score = current_best;
     }
   }

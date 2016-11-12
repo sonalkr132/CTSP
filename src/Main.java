@@ -1,12 +1,14 @@
 import java.util.ArrayList;
+import java.io.*;
+
 
 public class Main {
   public static void main(String[] args) {
-    int NUMBER_OF_FACILITES = 5;
-    int NUMBER_OF_CUSTOMERS = 15;
+    int NUMBER_OF_FACILITES = 40;
+    int NUMBER_OF_CUSTOMERS = 400;
     int POPULATION_SIZE = 40;
-    int PRIZE = 12;
-    int NUM_OF_ITR = 800;
+    int PRIZE = 100;
+    int NUM_OF_ITR = 8000;
     Population p = new Population(NUMBER_OF_FACILITES, NUMBER_OF_CUSTOMERS, POPULATION_SIZE, PRIZE); //number of points, population size
     p.random_point_facilites(100);
     p.allocate_customers();
@@ -54,17 +56,45 @@ public class Main {
 //    System.out.println("\nNEXT GENERATION\n");
 
 
-    for(int i = 0; i < NUM_OF_ITR; i++){
-      if(i % 100 == 0){
-      //Best Chromosome score and gene
-      System.out.println("\n\nBest Chromosome score and genes:\n");
-      ArrayList<Integer> genes = p.alltime_best_chromosome.genes;
-      System.out.print("[" + p.alltime_best_chromosome.score + "] ");
-      for(int j = 0; j < genes.size(); j++){
-        System.out.print(genes.get(j) + " ");
+    File file = new File("/home/addie/data.txt");
+    try{
+      // creates the file
+      file.createNewFile();
+      // creates a FileWriter Object
+      FileWriter writer = new FileWriter(file);   
+      for(int i = 0; i < NUM_OF_ITR; i++){
+        p.next_generation();
+        // Writes the content to the file
+        if(i < 100){
+          writer.write(String.valueOf(p.alltime_best_chromosome.score) + "\n");
+        } else if(i % 50 == 0) {
+          writer.write(String.valueOf(p.alltime_best_chromosome.score) + "\n");
+        }
       }
-      }
-      p.next_generation();
+      
+      writer.flush();
+      writer.close();
+    } catch (Exception e) {
+      System.out.println(e);
     }
   }
 }
+
+//if(i < 20){
+//  //Best Chromosome score and gene
+//  System.out.println("\n\nBest Chromosome score and genes:\n");
+//  ArrayList<Integer> genes = p.alltime_best_chromosome.genes;
+//  System.out.print("[" + p.alltime_best_chromosome.score + "] ");
+//  for(int j = 0; j < genes.size(); j++){
+//    System.out.print(genes.get(j) + " ");
+//  }
+//}
+//else if(i % 100 == 0){
+//  //Best Chromosome score and gene
+//  System.out.println("\n\nBest Chromosome score and genes:\n");
+//  ArrayList<Integer> genes = p.alltime_best_chromosome.genes;
+//  System.out.print("[" + p.alltime_best_chromosome.score + "] ");
+//  for(int j = 0; j < genes.size(); j++){
+//    System.out.print(genes.get(j) + " ");
+//  }
+//}
