@@ -4,13 +4,14 @@ import java.io.*;
 
 public class Main {
   public static void main(String[] args) {
-    int NUMBER_OF_FACILITES = 40;
-    int NUMBER_OF_CUSTOMERS = 400;
-    int POPULATION_SIZE = 40;
-    int PRIZE = 100;
+    int NUMBER_OF_FACILITES = 5;
+    int NUMBER_OF_CUSTOMERS = 40;
+    int POPULATION_SIZE = 20;
+    int PRIZE = 30;
     int NUM_OF_ITR = 8000;
     Population p = new Population(NUMBER_OF_FACILITES, NUMBER_OF_CUSTOMERS, POPULATION_SIZE, PRIZE); //number of points, population size
-    p.random_point_facilites(100);
+    p.fixed_point_facilites();
+    //p.random_point_facilites(100);
     p.allocate_customers();
     
     
@@ -75,6 +76,21 @@ public class Main {
         for(int j = 0; j < genes.size(); j++){
           System.out.print(genes.get(j) + " ");
         }
+      }
+      
+      //termination condition
+      if(p.best_score_fraction() > 0.9){
+        System.out.print("[Terminated at: " + i + " itr] ");
+        System.out.println("\n\nFinal Chromosome score and genes:\n");
+        for(int c = 0; c < POPULATION_SIZE; c++){
+          genes = p.chromosomes[c].genes;
+          System.out.print("[" + p.chromosomes[c].score + "] ");
+          for(int j = 0; j < genes.size(); j++){
+            System.out.print(genes.get(j) + " ");
+          }
+          System.out.println();
+        }
+        break;
       }
     }
   }

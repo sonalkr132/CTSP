@@ -8,6 +8,7 @@ public class Chromosome {
   public int collected_prize;
   ArrayList<Integer> genes;
   Facilites facilites;
+  int ITR_LIMIT = 100;
 
   Chromosome(CustomersAllocation cust_allocation, Facilites _facilites, int prize){
     genes = new ArrayList<Integer>();
@@ -82,6 +83,33 @@ public class Chromosome {
       collected_prize += ca.customers_per_facility[facility];
     }
     score = evaluate(facilites.map);
+  }
+  
+  public void two_opt(){
+    double initial_score = score, cur_score;
+    Random rand = new Random();
+    int opt1, opt2, range = genes.size();
+    ArrayList<Integer> cur_genes = genes;
+
+    for(int i = 0; i < ITR_LIMIT; i++){
+      opt1 = rand.nextInt(range);
+      opt2 = rand.nextInt(range);
+      
+      swap(genes, opt1, opt2);
+      cur_score = evaluate(facilites.map);
+      if(cur_score >= initial_score) genes = cur_genes;
+      else {
+        //better solution was found
+        //original genes are already swapped
+        cur_genes = genes;
+        i = 0; //reset iterator
+        score = cur_score;
+      }
+    }
+  }
+  
+  public void drop_and_procedures(){
+    
   }
   
   private void remove_duplicates(){

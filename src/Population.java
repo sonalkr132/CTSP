@@ -54,12 +54,26 @@ public class Population {
     selection();
     crossover();
     mutation();
+    //local_search();
     set_best_score();
+  }
+ 
+  private void local_search(){
+    Random rand = new Random();
+    int two_opt;
+    for(int i = 0; i < population_size; i++) {
+      two_opt = rand.nextInt(2);
+      if(two_opt == 1){
+        chromosomes[i].two_opt();
+      } else {
+        chromosomes[i].drop_and_procedures();
+      }
+    }
   }
   
   //selection has elitism of 4.
   // It uses roulette wheel selection
-  public void selection(){
+  private void selection(){
     Chromosome[] parents = new Chromosome[population_size];
     parents[0] = new Chromosome(current_best_chromosome.score,
         current_best_chromosome.collected_prize, 
@@ -83,7 +97,7 @@ public class Population {
     chromosomes = parents;
   }
   
-  public void mutation(){
+  private void mutation(){
     for(int i = 0; i < population_size; i++) {
       if(Math.random() < mutation_prob) {
         chromosomes[i] = Chromosome.mutate(cust_allocation, prize, chromosomes[i]);
@@ -92,7 +106,7 @@ public class Population {
     }
   }
   
-  public void crossover(){
+  private void crossover(){
     ArrayList<Integer> queue = new ArrayList<Integer>();
     
     for(int i=0; i< population_size; i++) {
@@ -139,12 +153,12 @@ public class Population {
     ArrayList<Integer> p2_genes = parent2.genes;
       
     ArrayList<Integer> child_left = new ArrayList<Integer>(parent1.genes.subList(0, start));
-    ArrayList<Integer> child_right = new ArrayList<Integer>(parent1.genes.subList(start, end - 1));
+    ArrayList<Integer> child_right = new ArrayList<Integer>(parent1.genes.subList(start, end));
     child_left.addAll(child_right);
     parent2.genes = child_left;
     
     child_left = new ArrayList<Integer>(p2_genes.subList(0, start));
-    child_right = new ArrayList<Integer>(p2_genes.subList(start, end - 1));
+    child_right = new ArrayList<Integer>(p2_genes.subList(start, end));
     child_left.addAll(child_right);
     parent1.genes = child_left;
    
@@ -174,6 +188,15 @@ public class Population {
       alltime_best_chromosome = chromosomes[current_best_idx];
       best_score = current_best;
     }
+  }
+  
+  public double best_score_fraction(){
+    int best_score_counter = 0;
+    for(int i = 0; i < population_size; i++){
+      if(chromosomes[i].score == best_score) best_score_counter++;
+    }
+    
+    return best_score_counter/population_size;
   }
   
   //creates the roulette wheel used in selection
