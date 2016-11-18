@@ -86,29 +86,61 @@ public class Chromosome {
   }
   
   public void two_opt(){
-    double initial_score = score, cur_score;
+    double cur_score;
     Random rand = new Random();
     int opt1, opt2, range = genes.size();
-    ArrayList<Integer> cur_genes = genes;
+    ArrayList<Integer> initial_genes = genes;
 
     for(int i = 0; i < ITR_LIMIT; i++){
       opt1 = rand.nextInt(range);
       opt2 = rand.nextInt(range);
-      
+      if(opt1 == opt2) continue;
+
       swap(genes, opt1, opt2);
       cur_score = evaluate(facilites.map);
-      if(cur_score >= initial_score) genes = cur_genes;
+      if(cur_score >= score) genes = initial_genes;
       else {
         //better solution was found
         //original genes are already swapped
-        cur_genes = genes;
+        initial_genes = genes;
         i = 0; //reset iterator
         score = cur_score;
       }
     }
   }
   
-  public void drop_and_procedures(){
+  public void drop_and_procedures(CustomersAllocation ca, int prize){
+    Random rand = new Random();
+    int removed_idx = rand.nextInt(genes.size());
+    
+    int removed_facility = genes.remove(removed_idx);
+    int removal_cost = ca.customers_per_facility[removed_facility];
+    ArrayList<Integer> unvisited_facilites = unvisited_facilites();
+    unvisited_facilites.add(removed_facility);
+
+    for(int i = 0; i < unvisited_facilites.size(); i++){
+      int itr_facility = unvisited_facilites.get(i);
+      int itr_cost = ca.customers_per_facility[itr_facility];
+      
+      if(collected_prize - removal_cost + itr_cost > prize){
+        //feasible solution
+        int prev_facility = genes.get(removed_facility - 1);
+        int next_facility = genes.get(removed_facility);
+        int dist = facilites.map[prev_facility][removed_facility] +
+                   facilites.map[removed_facility][next_facility] -
+                   facilites.map[prev_facility][itr_facility] -
+                   facilites.map[itr_facility][next_facility];
+        
+        if(dist < 0){
+          //score would improve
+          score -= dist;
+          genes.add(removed_idx, itr_facility);
+          collected_prize -= removal_cost;
+          collected_prize += itr_cost; 
+          break;
+        }
+      }
+    }
     
   }
   

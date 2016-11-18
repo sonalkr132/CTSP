@@ -54,7 +54,7 @@ public class Population {
     selection();
     crossover();
     mutation();
-    //local_search();
+    local_search();
     set_best_score();
   }
  
@@ -66,7 +66,7 @@ public class Population {
       if(two_opt == 1){
         chromosomes[i].two_opt();
       } else {
-        chromosomes[i].drop_and_procedures();
+        //chromosomes[i].drop_and_procedures(cust_allocation, prize);
       }
     }
   }
