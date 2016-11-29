@@ -22,7 +22,7 @@ public class Chromosome {
       collected_prize += cust_allocation.customers_per_facility[picked_facility];
     }
     shuffle_array(genes);
-    score = evaluate(facilites.map);
+    score = evaluate(facilites.map, facilites.depot_dist);
   }
   
   Chromosome(double _score, int _clone_prize, ArrayList<Integer> _genes, Facilites _facilites){
@@ -35,7 +35,7 @@ public class Chromosome {
   public void set_prize_and_score(CustomersAllocation ca){
     collected_prize = 0;
     for(int i =0; i < genes.size(); i++) collected_prize += ca.customers_per_facility[genes.get(i)];
-    score = evaluate(facilites.map);
+    score = evaluate(facilites.map, facilites.depot_dist);
   }
   
   private int pick_next_facility(ArrayList<Integer> facilites_set){
@@ -48,9 +48,9 @@ public class Chromosome {
   
   //Evaluates the total sum of distances between the genes/points of the chromosome
   // @param dist 2D array of distance between all the points
-  public double evaluate(int[][] dist){
+  public double evaluate(int[][] dist, int[] depot_dist){
     int size = genes.size();
-    double sum = dist[genes.get(0)][genes.get(size - 1)];
+    double sum = depot_dist[genes.get(0)] + depot_dist[genes.get(size - 1)];
     for(int i = 1; i < size; i++){
       sum += dist[genes.get(i)][genes.get(i - 1)];
     }
@@ -82,7 +82,7 @@ public class Chromosome {
       genes.add(facility);
       collected_prize += ca.customers_per_facility[facility];
     }
-    score = evaluate(facilites.map);
+    score = evaluate(facilites.map, facilites.depot_dist);
   }
   
   public void two_opt(){
@@ -97,7 +97,7 @@ public class Chromosome {
       if(opt1 == opt2) continue;
 
       swap(genes, opt1, opt2);
-      cur_score = evaluate(facilites.map);
+      cur_score = evaluate(facilites.map, facilites.depot_dist);
       if(cur_score >= score) genes = initial_genes;
       else {
         //better solution was found

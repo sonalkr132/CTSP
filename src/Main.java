@@ -4,25 +4,31 @@ import java.io.*;
 
 public class Main {
   public static void main(String[] args) {
-    int NUMBER_OF_FACILITES = 5;
-    int NUMBER_OF_CUSTOMERS = 40;
+    int NUMBER_OF_FACILITES = 15;
+    int NUMBER_OF_CUSTOMERS = 35;
     int POPULATION_SIZE = 30;
-    int PRIZE = 30;
+    int PRIZE = 35;
     int NUM_OF_ITR = 8000;
+    boolean TSPLIB = true;
     Population p = new Population(NUMBER_OF_FACILITES, NUMBER_OF_CUSTOMERS, POPULATION_SIZE, PRIZE); //number of points, population size
-    p.fixed_point_facilites();
-    //p.random_point_facilites(100);
-    p.allocate_customers();
     
-    
-    //customers allocation
-    System.out.println("\n\nAllocation(facilites x customers): \n");
-    for(int i = 0; i < NUMBER_OF_FACILITES; i++){
-      for(int j = 0; j < NUMBER_OF_CUSTOMERS; j++){
-        System.out.print(p.cust_allocation.allocation[i][j] + " ");
-      }
-      System.out.println();
+    if(TSPLIB){
+      p.tsplib_cities("/home/addie/current/tsplib/eil51.tsp", "points");
+      p.allocate_fixed_customers(3);
+    } else{
+      p.fixed_point_facilites();
+      //p.random_point_facilites(100);
+      p.allocate_customers();
     }
+
+    //customers allocation
+//    System.out.println("\n\nAllocation(facilites x customers): \n");
+//    for(int i = 0; i < NUMBER_OF_FACILITES; i++){
+//      for(int j = 0; j < NUMBER_OF_CUSTOMERS; j++){
+//        System.out.print(p.cust_allocation.allocation[i][j] + " ");
+//      }
+//      System.out.println();
+//    }
     
     //customers allocation per facility
     System.out.println("\nCustomers per facility: \n");

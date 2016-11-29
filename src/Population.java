@@ -35,8 +35,22 @@ public class Population {
     facilites.gen_random_facilites(dist_range);
   }
   
+  //Loads cities data from tsplib file
+  public void tsplib_cities(String filename, String type){
+    facilites = new Facilites(no_of_facilites);
+    if(type == "dist") facilites.load_tsplib(filename);
+    else if(type == "points") facilites.load_tsplib_points(filename);
+  }
+  
   public void allocate_customers(){
     cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
+    cust_allocation.allocate_customers();
+  }
+  
+  //only supported type is points
+  public void allocate_fixed_customers(int num){
+    cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
+    cust_allocation.allocate_fixed_customers(num);
   }
     
    //Intializes chromosomes with random chromosomes
