@@ -66,7 +66,7 @@ public class Population {
       if(two_opt == 1){
         chromosomes[i].two_opt();
       } else {
-        //chromosomes[i].drop_and_procedures(cust_allocation, prize);
+        chromosomes[i].drop_and_procedures(cust_allocation, prize);
       }
     }
   }

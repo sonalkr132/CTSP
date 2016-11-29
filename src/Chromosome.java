@@ -118,14 +118,15 @@ public class Chromosome {
     ArrayList<Integer> unvisited_facilites = unvisited_facilites();
     unvisited_facilites.add(removed_facility);
 
-    for(int i = 0; i < unvisited_facilites.size(); i++){
+    boolean found = false;
+    for(int i = 0; i < unvisited_facilites.size() && !found; i++){
       int itr_facility = unvisited_facilites.get(i);
       int itr_cost = ca.customers_per_facility[itr_facility];
       
       if(collected_prize - removal_cost + itr_cost > prize){
         //feasible solution
-        int prev_facility = genes.get(removed_facility - 1);
-        int next_facility = genes.get(removed_facility);
+        int prev_facility = genes.get(get_prev_facility(removed_idx));
+        int next_facility = genes.get(get_next_facility(removed_idx));
         int dist = facilites.map[prev_facility][removed_facility] +
                    facilites.map[removed_facility][next_facility] -
                    facilites.map[prev_facility][itr_facility] -
@@ -136,12 +137,26 @@ public class Chromosome {
           score -= dist;
           genes.add(removed_idx, itr_facility);
           collected_prize -= removal_cost;
-          collected_prize += itr_cost; 
-          break;
+          collected_prize += itr_cost;
+          found = true;
         }
       }
     }
     
+    //if better solution was not found put back removed facility
+    if(!found) genes.add(removed_facility);
+  }
+  
+  private int get_prev_facility(int idx){
+    if(idx == 0) return genes.size() - 1;
+    else return idx - 1;
+  }
+  
+  // facility was removed at idx. current facility at idx
+  // is next facility
+  private int get_next_facility(int idx){
+    if(idx == genes.size()) return 0;
+    else return idx;
   }
   
   private void remove_duplicates(){

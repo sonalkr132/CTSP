@@ -4,16 +4,25 @@ import java.io.*;
 
 public class Main {
   public static void main(String[] args) {
-    int NUMBER_OF_FACILITES = 30;
-    int NUMBER_OF_CUSTOMERS = 400;
-    int POPULATION_SIZE = 40;
-    int PRIZE = 300;
-    int NUM_OF_ITR = 10000;
+    int NUMBER_OF_FACILITES = 5;
+    int NUMBER_OF_CUSTOMERS = 40;
+    int POPULATION_SIZE = 30;
+    int PRIZE = 30;
+    int NUM_OF_ITR = 8000;
     Population p = new Population(NUMBER_OF_FACILITES, NUMBER_OF_CUSTOMERS, POPULATION_SIZE, PRIZE); //number of points, population size
-    //p.fixed_point_facilites();
-    p.random_point_facilites(100);
+    p.fixed_point_facilites();
+    //p.random_point_facilites(100);
     p.allocate_customers();
     
+    
+    //customers allocation
+    System.out.println("\n\nAllocation(facilites x customers): \n");
+    for(int i = 0; i < NUMBER_OF_FACILITES; i++){
+      for(int j = 0; j < NUMBER_OF_CUSTOMERS; j++){
+        System.out.print(p.cust_allocation.allocation[i][j] + " ");
+      }
+      System.out.println();
+    }
     
     //customers allocation per facility
     System.out.println("\nCustomers per facility: \n");
@@ -25,14 +34,7 @@ public class Main {
       System.out.print(p.cust_allocation.customers_per_facility[i] + " ");
     }
     
-    //customers allocation
-    System.out.println("\n\nAllocation(facilites x customers): \n");
-    for(int i = 0; i < NUMBER_OF_FACILITES; i++){
-      for(int j = 0; j < NUMBER_OF_CUSTOMERS; j++){
-        System.out.print(p.cust_allocation.allocation[i][j] + " ");
-      }
-      System.out.println();
-    }
+    
  
     p.initialize_population();
     
@@ -54,7 +56,7 @@ public class Main {
     for(int j = 0; j < genes.size(); j++){
       System.out.print(genes.get(j) + " ");
     }
-    System.out.println("\nNEXT GENERATION\n");
+    System.out.println("\nNEXT GENERATIONS:\n\n");
 
   
     for(int i = 0; i < NUM_OF_ITR; i++){
