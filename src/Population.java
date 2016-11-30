@@ -48,9 +48,9 @@ public class Population {
   }
   
   //only supported type is points
-  public void allocate_fixed_customers(int num){
+  public void allocate_fixed_customers(String filename, int num){
     cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
-    cust_allocation.allocate_fixed_customers(num);
+    cust_allocation.allocate_fixed_customers(filename, num);
   }
     
    //Intializes chromosomes with random chromosomes

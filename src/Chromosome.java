@@ -18,7 +18,7 @@ public class Chromosome {
  
     collected_prize = 0;
     while(collected_prize < prize){
-      int picked_facility = pick_next_facility(facilites_set);
+      int picked_facility = add_next_facility(facilites_set);
       collected_prize += cust_allocation.customers_per_facility[picked_facility];
     }
     shuffle_array(genes);
@@ -38,7 +38,7 @@ public class Chromosome {
     score = evaluate(facilites.map, facilites.depot_dist);
   }
   
-  private int pick_next_facility(ArrayList<Integer> facilites_set){
+  private int add_next_facility(ArrayList<Integer> facilites_set){
     Random rand = new Random();
     int idx = rand.nextInt(facilites_set.size());
     int facility = facilites_set.remove(idx);
@@ -67,7 +67,7 @@ public class Chromosome {
     }
   }
   
-  public static void swap( ArrayList<Integer> list, int firstInd, int secondInd ){
+  public static void swap(ArrayList<Integer> list, int firstInd, int secondInd ){
      int temp = list.set( firstInd, list.get( secondInd ) ) ;
      list.set( secondInd, temp ) ;
   }

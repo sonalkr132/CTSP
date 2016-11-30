@@ -72,7 +72,7 @@ public class Facilites {
      try {
        Scanner input = new Scanner(new File(filename));
        //only useful info in first six lines is dimension
-       for (int i = 0; i < 7; i++) input.nextLine();
+       for (int i = 0; i < 6; i++) input.nextLine();
        
        //storing depot
        input.nextInt(); //skip first number on each row

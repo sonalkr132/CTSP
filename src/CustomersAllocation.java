@@ -1,4 +1,5 @@
- import java.util.*;
+ import java.io.File;
+import java.util.*;
 
 public class CustomersAllocation {
   private int[][]allocation;
@@ -27,7 +28,8 @@ public class CustomersAllocation {
   }
   
   // does not allocate the allocation matrix
-  public void allocate_fixed_customers(int num){
+  public void allocate_fixed_customers(String filename, int num){
+    load_tsplib_points(filename, num);
     for(int i = 0; i < number_of_facilites; i++) customers_per_facility[i] = num;
   }
   
@@ -53,5 +55,72 @@ public class CustomersAllocation {
     public int compare(final Integer o1, final Integer o2) {
       return Float.compare(customers_per_facility[o1], customers_per_facility[o2]);
     }
+  }
+  
+  public void load_tsplib_points(String filename, int num){
+    int total_points = number_of_facilites + number_of_customers;
+    int[][] ary = new int[total_points][2];
+    try {
+      Scanner input = new Scanner(new File(filename));
+      //only useful info in first six lines is dimension and then skip 1 more for depot
+      for (int i = 0; i < 7; i++) input.nextLine();
+      
+      for (int i = 0; i < total_points; i++){
+        input.nextInt(); //skip first number on each row
+        ary[i][0] = input.nextInt();
+        ary[i][1] = input.nextInt();
+      }
+      input.close();
+    } catch (Exception e){
+      System.out.println("Something went wrong in loading tsplib:" + e.getMessage());
+    }
+
+    int [][]map = set_map(ary, total_points);
+    allocation = new int[number_of_facilites][number_of_customers];
+    for(int i=0; i < number_of_facilites; i++){
+      int[] customers = Arrays.copyOfRange(map[i], number_of_facilites, total_points);
+      ArrayIndexComparator comparator = new ArrayIndexComparator(customers);
+      Integer[] indexes = comparator.createIndexArray();
+      Arrays.sort(indexes, comparator);
+      
+      for(int c = 0; c < num; c++) allocation[i][indexes[c]] = 1;
+    }
+  }
+  
+  private int[][] set_map(int[][] ary, int total_points){
+    int [][]map = new int[total_points][total_points];
+    for(int i = 0; i < total_points; i++){
+      for(int j = 0; j < total_points; j++){
+        Double dist = distance_between(ary[i], ary[j]);
+        map[i][j] = dist.intValue();
+      }
+    }
+    
+    return map;
+  }
+  
+  
+  private double distance_between(int[] point_i, int[] point_j){
+    int dx = point_i[0] - point_j[0];
+    int dy = point_i[1] - point_j[1];
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  
+  public class ArrayIndexComparator implements Comparator<Integer> {
+      private final int[] array;
+
+      public ArrayIndexComparator(int[] array) {  this.array = array; }
+
+      public Integer[] createIndexArray(){
+          Integer[] indexes = new Integer[array.length];
+          for (int i = 0; i < array.length; i++) indexes[i] = i; // Autoboxing
+          return indexes;
+      }
+
+      @Override
+      public int compare(Integer index1, Integer index2){
+           // Autounbox from Integer to int to use as array indexes
+          return Integer.compare(array[index1], array[index2]);
+      }
   }
 }
