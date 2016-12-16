@@ -3,10 +3,10 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Facilites {
-  public int[][] map;
+  public double[][] map;
   public int number_of_facilites;
   private int MAX_DIST = 1000000;
-  public int[] depot_dist;
+  public double[] depot_dist;
   
   Facilites(int num){
     number_of_facilites = num;
@@ -14,7 +14,7 @@ public class Facilites {
   
    //generates a random 2d matrix for map
    public void gen_random_facilites(int dist_range){
-     map = new int[number_of_facilites][number_of_facilites];
+     map = new double[number_of_facilites][number_of_facilites];
      Random rand = new Random();
   
      for(int i = 0; i < number_of_facilites; i++){
@@ -34,18 +34,20 @@ public class Facilites {
    
    // loads the fixed map of cities
    public void load_fixed_distances(){
-     map = new int[][]{ {MAX_DIST,       26, MAX_DIST, MAX_DIST,       4},
-                        {      26, MAX_DIST,        3,       17, MAX_DIST},
-                        {MAX_DIST,        3, MAX_DIST,        9,       21},
-                        {MAX_DIST,       17,        9, MAX_DIST,        7},
-                        {       4, MAX_DIST,       21,        7, MAX_DIST}
-                      };
+     map = new double[][]{ {MAX_DIST,       26, 12, 9,       4},
+        {26, MAX_DIST,        3,       17, 19},
+        {12,        3, MAX_DIST,        9,       21},
+        {9,        17,        9, MAX_DIST,        7},
+        {4,        19,       21,        7, MAX_DIST}
+      };
+                      
+      depot_dist = new double[] {12,  26, 9, 21, 4};
    }
    
    public void load_tsplib(String filename){
      try {
        Scanner input = new Scanner(new File(filename));
-       map = new int[number_of_facilites][number_of_facilites];
+       map = new double[number_of_facilites][number_of_facilites];
   
        //only useful info in first six lines is dimension
        for (int i = 0; i < 7; i++) input.nextLine();
@@ -93,24 +95,25 @@ public class Facilites {
    }
    
    private void set_map(int[][] ary, int[] depot){
-     map = new int[number_of_facilites][number_of_facilites];
-     depot_dist = new int[number_of_facilites];
+     map = new double[number_of_facilites][number_of_facilites];
+     depot_dist = new double[number_of_facilites];
      for(int i = 0; i < number_of_facilites; i++){
        for(int j = 0; j < number_of_facilites; j++){
          Double dist = distance_between(ary[i], ary[j]);
-         map[i][j] = dist.intValue();
+         map[i][j] = dist;
        }
        
        //set depot distance
        Double depot_dist_i = distance_between(ary[i], depot);
-       depot_dist[i] = depot_dist_i.intValue();
+       depot_dist[i] = depot_dist_i;
      }
    }
    
    
    private double distance_between(int[] point_i, int[] point_j){
-     int dx = point_i[0] - point_j[0];
-     int dy = point_i[1] - point_j[1];
-     return Math.sqrt(dx * dx + dy * dy);
+     double dx = point_i[0] - point_j[0];
+     double dy = point_i[1] - point_j[1];
+     double ans = Math.sqrt(dx * dx + dy * dy);
+     return ans;
    }
 }

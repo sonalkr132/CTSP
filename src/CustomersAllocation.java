@@ -2,7 +2,7 @@
 import java.util.*;
 
 public class CustomersAllocation {
-  private int[][]allocation;
+  public int[][]allocation;
   public int[] customers_per_facility;
   Integer[] facilites_set;
   public int number_of_customers, number_of_facilites;

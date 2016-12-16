@@ -48,7 +48,7 @@ public class Chromosome {
   
   //Evaluates the total sum of distances between the genes/points of the chromosome
   // @param dist 2D array of distance between all the points
-  public double evaluate(int[][] dist, int[] depot_dist){
+  public double evaluate(double[][] dist, double[] depot_dist){
     int size = genes.size();
     double sum = depot_dist[genes.get(0)] + depot_dist[genes.get(size - 1)];
     for(int i = 1; i < size; i++){
@@ -127,7 +127,7 @@ public class Chromosome {
         //feasible solution
         int prev_facility = genes.get(get_prev_facility(removed_idx));
         int next_facility = genes.get(get_next_facility(removed_idx));
-        int dist = facilites.map[prev_facility][removed_facility] +
+        double dist = facilites.map[prev_facility][removed_facility] +
                    facilites.map[removed_facility][next_facility] -
                    facilites.map[prev_facility][itr_facility] -
                    facilites.map[itr_facility][next_facility];
