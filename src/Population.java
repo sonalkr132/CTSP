@@ -142,40 +142,33 @@ public class Population {
     Random rand = new Random();
     int smaller_size = get_smaller_size(parent1.genes, parent2.genes);
 
-    int m = rand.nextInt(smaller_size);
-    copy_genes(parent1, parent2, m, smaller_size);
+    int m = 1 + rand.nextInt(smaller_size - 1);
+    copy_genes(parent1, parent2, m);
     
     parent1.recover(prize, cust_allocation);
     parent2.recover(prize, cust_allocation);
   }
   
-  public void copy_genes(Chromosome parent1, Chromosome parent2, int cp, int end){
+  public void copy_genes(Chromosome parent1, Chromosome parent2, int cp){
     ArrayList<Integer> p2_genes = parent2.genes;
     ArrayList<Integer> p1_genes = parent1.genes;
     
     //generating first child genes
     ArrayList<Integer> child_left = new ArrayList<Integer>(p1_genes.subList(0, cp));
-    ArrayList<Integer> child_right = new ArrayList<Integer>(p2_genes.subList(cp, end));
+    int nearest_facility = facilites.find_nearest_facility(p1_genes.get(cp - 1));
+    int cp2 = parent2.find_facility_index(nearest_facility);
+    ArrayList<Integer> child_right = new ArrayList<Integer>(p2_genes.subList(cp2, p2_genes.size()));
     child_left.addAll(child_right);
     
-    if(p2_genes.size() > p1_genes.size()) {
-      //parent2.genes has more elements after `end`, we need to copy them as well
-      ArrayList<Integer> child_longer = new ArrayList<Integer>(p2_genes.subList(end, p2_genes.size()));
-      child_left.addAll(child_longer);
-    }
     parent2.genes = child_left;
-    
-    
+
     //generating second child genes
     child_left = new ArrayList<Integer>(p2_genes.subList(0, cp));
-    child_right = new ArrayList<Integer>(p1_genes.subList(cp, end));
+    nearest_facility = facilites.find_nearest_facility(p2_genes.get(cp - 1));
+    cp2 = parent1.find_facility_index(nearest_facility);
+    child_right = new ArrayList<Integer>(p1_genes.subList(cp2, p1_genes.size()));
     child_left.addAll(child_right);
     
-    if(p2_genes.size() < p1_genes.size()) {
-      //parent1.genes has more elements after `end`, we need to copy them as well
-      ArrayList<Integer> child_longer = new ArrayList<Integer>(p1_genes.subList(end, p1_genes.size()));
-      child_left.addAll(child_longer);
-    }
     parent1.genes = child_left;
   }
   

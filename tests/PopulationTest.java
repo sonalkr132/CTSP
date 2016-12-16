@@ -44,17 +44,18 @@ public class PopulationTest {
   @Test
   public void test_copy_genes(){
     p.cust_allocation = ca_stub;
+    p.facilites = f_stub;
     ArrayList<Integer> genes1 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4));
     ArrayList<Integer> genes2 = new ArrayList<Integer>(Arrays.asList(3, 4, 1));
     Chromosome parent1 = new Chromosome(0.0, 0, genes1, f_stub);
     Chromosome parent2 = new Chromosome(0.0, 0, genes2, f_stub);
     
-    p.copy_genes(parent1, parent2, 1, 3);
+    p.copy_genes(parent1, parent2, 1);
     
-    ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(3, 2, 3, 4));
-    assertTrue(parent1.genes.equals(expected_genes));
-    
-    expected_genes = new ArrayList<Integer>(Arrays.asList(1, 4, 1));
+    ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(1, 4, 1));
     assertTrue(parent2.genes.equals(expected_genes));
+    
+    expected_genes = new ArrayList<Integer>(Arrays.asList(3, 4));
+    assertTrue(parent1.genes.equals(expected_genes));
   }
 }

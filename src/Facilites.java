@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Facilites {
   public double[][] map;
   public int number_of_facilites;
-  private int MAX_DIST = 1000000;
+  private double MAX_DIST = 1000000.0;
   public double[] depot_dist;
   
   Facilites(int num){
@@ -92,6 +92,19 @@ public class Facilites {
      }
 
      set_map(ary, depot);
+   }
+   
+   public int find_nearest_facility(int facility){
+     int idx = 0;
+     double min_dist = MAX_DIST;
+     for(int i = 0; i < number_of_facilites; i++){
+       if(min_dist > map[facility][i]){
+         min_dist = map[facility][i];
+         idx = i;
+       }
+     }
+     
+     return idx;
    }
    
    private void set_map(int[][] ary, int[] depot){

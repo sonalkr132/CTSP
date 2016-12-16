@@ -58,6 +58,14 @@ public class Chromosome {
     return sum;
   }
   
+  public int find_facility_index(int facility){
+    for(int i = 0 ; i < genes.size(); i++) {
+      if(genes.get(i) == facility) return i;
+    }
+    
+    return genes.size()/2;
+  }
+  
   private void shuffle_array(ArrayList<Integer> a) {
     int n = a.size() ;
     Random random = new Random();
