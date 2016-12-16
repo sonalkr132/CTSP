@@ -131,7 +131,6 @@ public class Population {
 
     Collections.shuffle(queue);
     for(int i = 0; i < queue.size() -1; i += 2) {
-      //System.out.println(queue.get(i) + " " + queue.get(i + 1));
       do_crossover(queue.get(i), queue.get(i + 1));
     }
   }
@@ -141,8 +140,7 @@ public class Population {
     Chromosome parent2 = chromosomes[y];
     
     Random rand = new Random();
-    Chromosome smaller_parent = get_smaller_parent(parent1, parent2);
-    int smaller_size = smaller_parent.genes.size();
+    int smaller_size = get_smaller_size(parent1.genes, parent2.genes);
 
     int m = rand.nextInt(smaller_size);
     copy_genes(parent1, parent2, m, smaller_size);
@@ -151,33 +149,38 @@ public class Population {
     parent2.recover(prize, cust_allocation);
   }
   
-  private void copy_genes(Chromosome parent1, Chromosome parent2, int cp, int end){
+  public void copy_genes(Chromosome parent1, Chromosome parent2, int cp, int end){
     ArrayList<Integer> p2_genes = parent2.genes;
-      
-    ArrayList<Integer> child_left = new ArrayList<Integer>(parent1.genes.subList(0, cp));
+    ArrayList<Integer> p1_genes = parent1.genes;
+    
+    //generating first child genes
+    ArrayList<Integer> child_left = new ArrayList<Integer>(p1_genes.subList(0, cp));
     ArrayList<Integer> child_right = new ArrayList<Integer>(p2_genes.subList(cp, end));
     child_left.addAll(child_right);
-    if(p2_genes.size() > parent1.genes.size()) {
+    
+    if(p2_genes.size() > p1_genes.size()) {
+      //parent2.genes has more elements after `end`, we need to copy them as well
       ArrayList<Integer> child_longer = new ArrayList<Integer>(p2_genes.subList(end, p2_genes.size()));
       child_left.addAll(child_longer);
     }
     parent2.genes = child_left;
     
+    
+    //generating second child genes
     child_left = new ArrayList<Integer>(p2_genes.subList(0, cp));
-    child_right = new ArrayList<Integer>(parent1.genes.subList(cp, end));
+    child_right = new ArrayList<Integer>(p1_genes.subList(cp, end));
     child_left.addAll(child_right);
-    if(p2_genes.size() < parent1.genes.size()) {
-      ArrayList<Integer> child_longer = new ArrayList<Integer>(parent1.genes.subList(end, p2_genes.size()));
+    
+    if(p2_genes.size() < p1_genes.size()) {
+      //parent1.genes has more elements after `end`, we need to copy them as well
+      ArrayList<Integer> child_longer = new ArrayList<Integer>(p1_genes.subList(end, p1_genes.size()));
       child_left.addAll(child_longer);
     }
     parent1.genes = child_left;
-   
-    parent1.set_prize_and_score(cust_allocation);
-    parent2.set_prize_and_score(cust_allocation);
   }
   
-  private Chromosome get_smaller_parent(Chromosome a, Chromosome b){
-    return (a.genes.size() > b.genes.size() ? b : a);
+  private int get_smaller_size(ArrayList<Integer> a, ArrayList<Integer> b){
+    return (a.size() > b.size() ? b.size() : a.size());
   }
   
   //evaluates the best score of current population and changes
@@ -199,7 +202,6 @@ public class Population {
           chromosomes[current_best_idx].collected_prize, 
           chromosomes[current_best_idx].genes, 
           chromosomes[current_best_idx].facilites);
-      System.out.println(alltime_best_chromosome.collected_prize + " " + chromosomes[current_best_idx].genes.size());
       best_score = current_best;
     }
   }

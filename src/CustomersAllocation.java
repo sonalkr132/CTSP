@@ -7,6 +7,7 @@ public class CustomersAllocation {
   Integer[] facilites_set;
   public int number_of_customers, number_of_facilites;
   
+  
   CustomersAllocation(int _number_of_customers, int _number_of_facilites){
     number_of_customers = _number_of_customers;
     number_of_facilites = _number_of_facilites;

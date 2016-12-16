@@ -1,6 +1,5 @@
 import static org.junit.Assert.*;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,20 +11,6 @@ public class FacilitesTest {
     facility = new Facilites(5);
   }
 
-  @After
-  public void tearDown() throws Exception {
-  }
-
-  @Test
-  public void testFacilites() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testGen_random_facilites() {
-    fail("Not yet implemented");
-  }
-
   @Test
   public void test_load_fixed_distances() {
     facility.load_fixed_distances();
@@ -35,15 +20,4 @@ public class FacilitesTest {
     assertArrayEquals(facility.map[0], expected_map, 0.001);
     assertArrayEquals(facility.depot_dist, expected_depot_dist, 0.001);
   }
-
-  @Test
-  public void testLoad_tsplib() {
-    fail("Not yet implemented");
-  }
-
-  @Test
-  public void testLoad_tsplib_points() {
-    fail("Not yet implemented");
-  }
-
 }

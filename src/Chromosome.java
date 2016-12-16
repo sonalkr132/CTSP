@@ -6,19 +6,20 @@ import java.util.Random;
 public class Chromosome {
   public double score;
   public int collected_prize;
-  ArrayList<Integer> genes;
-  Facilites facilites;
+  public ArrayList<Integer> genes;
+  public ArrayList<Integer> facilites_set;
+  final Facilites facilites;
   int ITR_LIMIT = 100;
 
   Chromosome(CustomersAllocation cust_allocation, Facilites _facilites, int prize){
     genes = new ArrayList<Integer>();
     facilites = _facilites;
-    ArrayList<Integer> facilites_set = new ArrayList<Integer> ();
+    facilites_set = new ArrayList<Integer> ();
     for(int i = 0; i < facilites.number_of_facilites; i++) facilites_set.add(i);
  
     collected_prize = 0;
     while(collected_prize < prize){
-      int picked_facility = add_next_facility(facilites_set);
+      int picked_facility = add_next_facility();
       collected_prize += cust_allocation.customers_per_facility[picked_facility];
     }
     shuffle_array(genes);
@@ -38,7 +39,7 @@ public class Chromosome {
     score = evaluate(facilites.map, facilites.depot_dist);
   }
   
-  private int add_next_facility(ArrayList<Integer> facilites_set){
+  public int add_next_facility(){
     Random rand = new Random();
     int idx = rand.nextInt(facilites_set.size());
     int facility = facilites_set.remove(idx);
@@ -67,7 +68,7 @@ public class Chromosome {
     }
   }
   
-  public static void swap(ArrayList<Integer> list, int firstInd, int secondInd ){
+  private static void swap(ArrayList<Integer> list, int firstInd, int secondInd ){
      int temp = list.set( firstInd, list.get( secondInd ) ) ;
      list.set( secondInd, temp ) ;
   }
@@ -77,6 +78,8 @@ public class Chromosome {
     ArrayList<Integer> unvisited_facilites = unvisited_facilites();
     unvisited_facilites = ca.sort(unvisited_facilites);
 
+    collected_prize = 0;
+    for(int i =0; i < genes.size(); i++) collected_prize += ca.customers_per_facility[genes.get(i)];
     while(collected_prize < prize){
       int facility = unvisited_facilites.remove(0);
       genes.add(facility);
@@ -159,7 +162,7 @@ public class Chromosome {
     else return idx;
   }
   
-  private void remove_duplicates(){
+  public void remove_duplicates(){
     ArrayList<Integer> dup = new ArrayList<Integer>();
     Iterator<Integer> iterator = genes.iterator();
     while(iterator.hasNext()){
@@ -170,7 +173,7 @@ public class Chromosome {
     genes = dup;
   }
   
-  private ArrayList<Integer> unvisited_facilites(){
+  public ArrayList<Integer> unvisited_facilites(){
     ArrayList<Integer> unvisited_facilites = new ArrayList<Integer> ();
     for(int i = 0; i < facilites.number_of_facilites; i++) {
       if(!genes.contains(i)) unvisited_facilites.add(i);

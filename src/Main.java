@@ -25,7 +25,7 @@ public class Main {
     System.out.println("\n\nAllocation(facilites x customers): \n");
     for(int i = 0; i < NUMBER_OF_FACILITES; i++){
       for(int j = 0; j < NUMBER_OF_CUSTOMERS; j++){
-        System.out.print(p.cust_allocation.allocation[i][j] + " ");
+        System.out.print(p.cust_allocation.allocation[i][j] + ", ");
       }
       System.out.println();
     }
