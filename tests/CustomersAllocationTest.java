@@ -26,4 +26,16 @@ public class CustomersAllocationTest {
     assertEquals(number_of_customers, facility_sum);
     assertEquals(number_of_customers, allocation_sum);
   }
+  
+  @Test
+  public void copy_constructor(){
+    ca.allocate_customers();
+    CustomersAllocation copy_ca = new CustomersAllocation(ca);
+    ca.customers_per_facility[0] = 0;
+    assertNotEquals(copy_ca.customers_per_facility[0], 0);
+    ca.facilites_set[0] = 1;
+    assertTrue(copy_ca.facilites_set[0] != ca.facilites_set[0]);
+    ca.allocation[0][0] = 2;
+    assertTrue(copy_ca.allocation[0][0] != ca.allocation[0][0]);
+  }
 }

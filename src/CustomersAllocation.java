@@ -17,6 +17,19 @@ public class CustomersAllocation {
     for(int i =0; i < number_of_facilites; i++) facilites_set[i] = Integer.valueOf(i);
   }
   
+  // copy constructor
+  CustomersAllocation(CustomersAllocation original_ca){
+    number_of_customers = original_ca.number_of_customers;
+    number_of_facilites = original_ca.number_of_facilites;
+    
+    customers_per_facility = original_ca.customers_per_facility.clone();
+    facilites_set = original_ca.facilites_set.clone();
+    allocation = new int[number_of_facilites][number_of_customers];
+    for(int i = 0; i < number_of_facilites; i++){
+      allocation[i] = original_ca.allocation[i].clone(); 
+    }
+  }
+  
   public void allocate_customers(){
     allocation = new int[number_of_facilites][number_of_customers];
     Random rand = new Random();

@@ -92,11 +92,13 @@ public class Population {
     parents[0] = new Chromosome(current_best_chromosome.score,
         current_best_chromosome.collected_prize, 
         current_best_chromosome.genes, 
-        current_best_chromosome.facilites);
+        current_best_chromosome.facilites,
+        current_best_chromosome.callocation);
     parents[1] = new Chromosome(alltime_best_chromosome.score,
         alltime_best_chromosome.collected_prize, 
         alltime_best_chromosome.genes, 
-        alltime_best_chromosome.facilites);
+        alltime_best_chromosome.facilites,
+        alltime_best_chromosome.callocation);
     parents[2] = Chromosome.mutate(cust_allocation, prize, alltime_best_chromosome);
     parents[3] = Chromosome.mutate(cust_allocation, prize, alltime_best_chromosome);
 
@@ -105,7 +107,7 @@ public class Population {
     Random prang = new Random();
     for(int i = 4; i < population_size; i++){
       Chromosome c = chromosomes[spin_wheel(prang.nextInt(100))];
-      parents[i] = new Chromosome(c.score, c.collected_prize, c.genes, c.facilites);
+      parents[i] = new Chromosome(c.score, c.collected_prize, c.genes, c.facilites, c.callocation);
     }
 
     chromosomes = parents;
@@ -194,7 +196,8 @@ public class Population {
       alltime_best_chromosome = new Chromosome(chromosomes[current_best_idx].score, 
           chromosomes[current_best_idx].collected_prize, 
           chromosomes[current_best_idx].genes, 
-          chromosomes[current_best_idx].facilites);
+          chromosomes[current_best_idx].facilites,
+          chromosomes[current_best_idx].callocation);
       best_score = current_best;
     }
   }

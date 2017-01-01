@@ -47,8 +47,8 @@ public class PopulationTest {
     p.facilites = f_stub;
     ArrayList<Integer> genes1 = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 4));
     ArrayList<Integer> genes2 = new ArrayList<Integer>(Arrays.asList(3, 4, 1));
-    Chromosome parent1 = new Chromosome(0.0, 0, genes1, f_stub);
-    Chromosome parent2 = new Chromosome(0.0, 0, genes2, f_stub);
+    Chromosome parent1 = new Chromosome(0.0, 0, genes1, f_stub, ca_stub);
+    Chromosome parent2 = new Chromosome(0.0, 0, genes2, f_stub, ca_stub);
     
     p.copy_genes(parent1, parent2, 1);
     
