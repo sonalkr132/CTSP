@@ -220,4 +220,18 @@ public class ChromosomeTest {
       assertArrayEquals(empty_ch.callocation.allocation[i], ca_stub.allocation[i]);
     }
   }
+  
+   ///////////////////////////////////////////////////////////////////////////////////////////
+   //                                   facility_exchange_cost                              //
+   ///////////////////////////////////////////////////////////////////////////////////////////
+  
+   @Test
+   public void test_facility_exchange_cost(){
+     empty_ch.add_facility(0, 3);
+     empty_ch.add_facility(1, 1);
+     empty_ch.add_facility(2, 4);
+ 
+     double dist = empty_ch.facility_exchange_cost(1, 2, 0);
+     assertEquals(-23.0, dist, 0.001);
+   }
 }

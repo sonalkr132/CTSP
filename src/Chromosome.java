@@ -157,16 +157,12 @@ public class Chromosome {
       
       if(collected_prize + itr_cost >= prize){
         //feasible solution
-        int prev_facility = genes.get(get_prev_facility(r_idx));
-        int next_facility = genes.get(get_next_facility(r_idx));
-        double dist = facilites.map[prev_facility][r_facility] +
-                   facilites.map[r_facility][next_facility] -
-                   facilites.map[prev_facility][itr_facility] -
-                   facilites.map[itr_facility][next_facility];
+        //we will try to see if score improves
+        double dist = facility_exchange_cost(r_idx, r_facility, itr_facility);
         
-        if(dist < 0){
+        if(dist > 0){
           //score would improve
-          score += dist;
+          score -= dist;
           add_facility(r_idx, itr_facility);
           found = true;
         }
@@ -175,16 +171,25 @@ public class Chromosome {
     if(!found) add_facility(r_idx, r_facility);
   }
   
-  private int get_prev_facility(int idx){
-    if(idx == 0) return genes.size() - 1;
-    else return idx - 1;
-  }
-  
-  // facility was removed at idx. current facility at idx
-  // is next facility
-  private int get_next_facility(int idx){
-    if(idx == genes.size()) return 0;
-    else return idx;
+  public double facility_exchange_cost(int r_idx, int r_facility, int itr_facility){
+    int prev_facility;
+    int next_facility;
+    double dist;
+    if(r_idx == 0){
+      next_facility = genes.get(r_idx);
+      dist = facilites.depot_dist[r_facility] + facilites.map[r_facility][next_facility]
+             - facilites.depot_dist[itr_facility] - facilites.map[itr_facility][next_facility];
+    } else if(r_idx == genes.size()){
+      prev_facility = genes.get(r_idx - 1);
+      dist = facilites.map[prev_facility][r_facility] + facilites.depot_dist[r_facility]
+             - facilites.map[prev_facility][itr_facility] - facilites.depot_dist[r_facility];
+    } else{
+      next_facility = genes.get(r_idx);
+      prev_facility = genes.get(r_idx - 1);
+      dist = facilites.map[prev_facility][r_facility] + facilites.map[r_facility][next_facility]
+             - facilites.map[prev_facility][itr_facility] - facilites.map[itr_facility][next_facility]; 
+    }    
+    return dist;
   }
 
   public ArrayList<Integer> unvisited_facilites(){

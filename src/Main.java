@@ -14,7 +14,7 @@ public class Main {
     
     if(TSPLIB){
       p.tsplib_cities("/home/addie/current/tsplib/eil51.tsp", "points");
-      p.allocate_fixed_customers("/home/addie/current/tsplib/eil51.tsp", 6);
+      p.allocate_fixed_customers("/home/addie/current/tsplib/eil51.tsp", 5);
     } else{
       p.fixed_point_facilites();
       //p.random_point_facilites(100);
