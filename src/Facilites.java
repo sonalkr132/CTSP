@@ -91,7 +91,28 @@ public class Facilites {
        System.out.println("Something went wrong in loading tsplib:" + e.getMessage());
      }
 
-     set_map(ary, depot);
+     //set_map(ary, depot);
+   }
+   
+   public void load_csp_points(String filename) {
+     int[][] ary = new int[number_of_facilites][2];
+
+     try {
+       Scanner input = new Scanner(new File(filename));
+       //only useful info in first six lines is dimension
+       for (int i = 0; i < 6; i++) input.nextLine();
+       
+       for (int i = 0; i < number_of_facilites; i++){
+         input.nextInt(); //skip first number on each row
+         ary[i][0] = input.nextInt();
+         ary[i][1] = input.nextInt();
+       }
+       input.close();
+     } catch (Exception e){
+       System.out.println("Something went wrong in loading tsplib:" + e.getMessage());
+     }
+     
+     set_map(ary);
    }
    
    public int find_nearest_facility(int facility){
@@ -107,18 +128,13 @@ public class Facilites {
      return idx;
    }
    
-   private void set_map(int[][] ary, int[] depot){
+   private void set_map(int[][] ary){
      map = new double[number_of_facilites][number_of_facilites];
-     depot_dist = new double[number_of_facilites];
      for(int i = 0; i < number_of_facilites; i++){
        for(int j = 0; j < number_of_facilites; j++){
          Double dist = distance_between(ary[i], ary[j]);
          map[i][j] = dist;
        }
-       
-       //set depot distance
-       Double depot_dist_i = distance_between(ary[i], depot);
-       depot_dist[i] = depot_dist_i;
      }
    }
    

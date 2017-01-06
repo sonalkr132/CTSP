@@ -26,7 +26,7 @@ public class PopulationTest {
 
   @Test
   public void test_allocate_customers() {
-    p.allocate_customers();
+    p.allocate_random_customers();
     assertNotNull(p.cust_allocation);
   }
   

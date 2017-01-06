@@ -42,15 +42,20 @@ public class Population {
     else if(type == "points") facilites.load_tsplib_points(filename);
   }
   
-  public void allocate_customers(){
+  public void csp_cities(String filename) {
+    facilites = new Facilites(no_of_facilites);
+    facilites.load_csp_points(filename);
+  }
+  
+  public void allocate_random_customers(){
     cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
-    cust_allocation.allocate_customers();
+    cust_allocation.allocate_random_customers();
   }
   
   //only supported type is points
-  public void allocate_fixed_customers(String filename, int num){
+  public void allocate_customers(String filename, int num){
     cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
-    cust_allocation.allocate_fixed_customers(filename, num);
+    cust_allocation.allocate_customers(filename, num, facilites.map);
   }
     
    //Intializes chromosomes with random chromosomes

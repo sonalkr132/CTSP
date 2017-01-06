@@ -20,7 +20,7 @@ public class Chromosome {
     while(collected_prize < prize) add_next_facility();
 
     shuffle_array(genes);
-    score = evaluate(facilites.map, facilites.depot_dist);
+    score = evaluate(facilites.map);
   }
   
   Chromosome(double _score, int _clone_prize, ArrayList<Integer> _genes, Facilites _facilites, CustomersAllocation ca){
@@ -58,9 +58,9 @@ public class Chromosome {
   
   //Evaluates the total sum of distances between the genes/points of the chromosome
   // @param dist 2D array of distance between all the points
-  public double evaluate(double[][] dist, double[] depot_dist){
+  public double evaluate(double[][] dist){
     int size = genes.size();
-    double sum = depot_dist[genes.get(0)] + depot_dist[genes.get(size - 1)];
+    double sum = dist[genes.get(0)][genes.get(size - 1)];
     for(int i = 1; i < size; i++){
       sum += dist[genes.get(i)][genes.get(i - 1)];
     }
@@ -94,7 +94,7 @@ public class Chromosome {
       int facility = unvisited_facilites.remove(0);
       add_facility(genes.size(), facility);
     }
-    score = evaluate(facilites.map, facilites.depot_dist);
+    score = evaluate(facilites.map);
   }
   
   public void remove_duplicates(CustomersAllocation original_ca){
@@ -125,7 +125,7 @@ public class Chromosome {
   
   public boolean check_better_opt(int opt1, int opt2){
     swap(genes, opt1, opt2);
-    double cur_score = evaluate(facilites.map, facilites.depot_dist);
+    double cur_score = evaluate(facilites.map);
     if(cur_score >= score){
       swap(genes, opt1, opt2);
       return false;
@@ -172,24 +172,23 @@ public class Chromosome {
   }
   
   public double facility_exchange_cost(int r_idx, int r_facility, int itr_facility){
-    int prev_facility;
-    int next_facility;
-    double dist;
-    if(r_idx == 0){
-      next_facility = genes.get(r_idx);
-      dist = facilites.depot_dist[r_facility] + facilites.map[r_facility][next_facility]
-             - facilites.depot_dist[itr_facility] - facilites.map[itr_facility][next_facility];
-    } else if(r_idx == genes.size()){
-      prev_facility = genes.get(r_idx - 1);
-      dist = facilites.map[prev_facility][r_facility] + facilites.depot_dist[r_facility]
-             - facilites.map[prev_facility][itr_facility] - facilites.depot_dist[r_facility];
-    } else{
-      next_facility = genes.get(r_idx);
-      prev_facility = genes.get(r_idx - 1);
-      dist = facilites.map[prev_facility][r_facility] + facilites.map[r_facility][next_facility]
-             - facilites.map[prev_facility][itr_facility] - facilites.map[itr_facility][next_facility]; 
-    }    
-    return dist;
+    int prev_facility = genes.get(get_prev_facility(r_idx));;
+    int next_facility = genes.get(get_next_facility(r_idx));
+
+    return facilites.map[prev_facility][r_facility] + facilites.map[r_facility][next_facility]
+             - facilites.map[prev_facility][itr_facility] - facilites.map[itr_facility][next_facility];
+  }
+  
+  private int get_prev_facility(int idx){
+    if(idx == 0) return genes.size() - 1;
+    else return idx - 1;
+  }
+  
+  // facility was removed at idx. current facility at idx
+  // is next facility
+  private int get_next_facility(int idx){
+    if(idx == genes.size()) return 0;
+    else return idx;
   }
 
   public ArrayList<Integer> unvisited_facilites(){

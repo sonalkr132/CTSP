@@ -4,21 +4,23 @@ import java.io.*;
 
 public class Main {
   public static void main(String[] args) {
-    int NUMBER_OF_FACILITES = 15;
-    int NUMBER_OF_CUSTOMERS = 35;
+    int NUMBER_OF_FACILITES = 51;
+    int NUMBER_OF_CUSTOMERS = 51;
     int POPULATION_SIZE = 30;
-    int PRIZE = 17;
+    int PRIZE = 51;
     int NUM_OF_ITR = 20000;
-    boolean TSPLIB = true;
+    boolean TSPLIB = false;
     Population p = new Population(NUMBER_OF_FACILITES, NUMBER_OF_CUSTOMERS, POPULATION_SIZE, PRIZE); //number of points, population size
     
     if(TSPLIB){
       p.tsplib_cities("/home/addie/current/tsplib/eil51.tsp", "points");
-      p.allocate_fixed_customers("/home/addie/current/tsplib/eil51.tsp", 5);
+      p.allocate_customers("/home/addie/current/tsplib/eil51.tsp", 5);
     } else{
-      p.fixed_point_facilites();
+      //p.fixed_point_facilites();
       //p.random_point_facilites(100);
-      p.allocate_customers();
+      //p.allocate_customers();
+      p.csp_cities("/home/addie/current/tsplib/eil51.tsp");
+      p.allocate_customers("/home/addie/current/tsplib/eil51.tsp", 7);
     }
 
     //customers allocation

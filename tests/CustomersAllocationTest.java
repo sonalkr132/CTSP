@@ -15,7 +15,7 @@ public class CustomersAllocationTest {
   
   @Test
   public void test_customer_per_facility_adds_to_total_customers() {
-    ca.allocate_customers();
+    //ca.allocate_customers();
     
     int facility_sum = 0, allocation_sum = 0;
     for(int i = 0; i < number_of_facilites; i++) facility_sum += ca.customers_per_facility[i];
@@ -29,7 +29,7 @@ public class CustomersAllocationTest {
   
   @Test
   public void copy_constructor(){
-    ca.allocate_customers();
+    //ca.allocate_customers();
     CustomersAllocation copy_ca = new CustomersAllocation(ca);
     ca.customers_per_facility[0] = 0;
     assertNotEquals(copy_ca.customers_per_facility[0], 0);
