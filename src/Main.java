@@ -68,14 +68,13 @@ public class Main {
       }
       
       //termination condition
-      if(p.best_score_fraction() > 0.7 || no_change > 2000){
+      if(no_change > 2000){
         System.out.println("\n\n[Terminated at: " + i + " itr] ");
         print_best_chromosome(p);
         //print_all_chromosomes(p, POPULATION_SIZE);
         break;
       }
     }
-    
     long endTime = System.nanoTime();
     System.out.println("Took "+(endTime - startTime) / 1000000000.0 + " s"); 
   }

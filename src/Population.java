@@ -75,6 +75,11 @@ public class Population {
     mutation();
     local_search();
     set_best_score();
+    survivor_selection();
+  }
+  
+  private void survivor_selection(){
+    
   }
  
   private void local_search(){
@@ -104,8 +109,18 @@ public class Population {
         alltime_best_chromosome.genes, 
         alltime_best_chromosome.facilites,
         alltime_best_chromosome.callocation);
-    parents[2] = Chromosome.mutate(cust_allocation, prize, alltime_best_chromosome);
-    parents[3] = Chromosome.mutate(cust_allocation, prize, alltime_best_chromosome);
+    parents[2] = new Chromosome(alltime_best_chromosome.score,
+        alltime_best_chromosome.collected_prize, 
+        alltime_best_chromosome.genes, 
+        alltime_best_chromosome.facilites,
+        alltime_best_chromosome.callocation);
+    parents[2].mutate(cust_allocation, prize);
+    parents[3] = new Chromosome(current_best_chromosome.score,
+        current_best_chromosome.collected_prize, 
+        current_best_chromosome.genes, 
+        current_best_chromosome.facilites,
+        current_best_chromosome.callocation);
+    parents[3].mutate(cust_allocation, prize);
 
     set_roulette();
 
@@ -121,7 +136,7 @@ public class Population {
   private void mutation(){
     for(int i = 0; i < population_size; i++) {
       if(Math.random() < mutation_prob) {
-        chromosomes[i] = Chromosome.mutate(cust_allocation, prize, chromosomes[i]);
+        chromosomes[i].mutate(cust_allocation, prize);
         i--;
       }
     }

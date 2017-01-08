@@ -1,6 +1,6 @@
 import java.io.File;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
+
 
 public class Facilites {
   public double[][] map;
@@ -126,6 +126,23 @@ public class Facilites {
      }
      
      return idx;
+   }
+   
+   public ArrayList<Integer> sort(Integer origin_facility, ArrayList<Integer> facilites){
+     DistanceComparator comparator = new DistanceComparator(origin_facility);
+     Collections.sort(facilites, comparator);
+     
+     return new ArrayList<Integer>(facilites.subList(0, 6));
+   }
+   
+   public class DistanceComparator implements Comparator<Integer> {
+     private int facility;
+     
+     public DistanceComparator(int facility) {  this.facility = facility; }
+ 
+     public int compare(final Integer o1, final Integer o2) {
+       return Double.compare(map[facility][o1], map[facility][o2]);
+     }
    }
    
    private void set_map(int[][] ary){
