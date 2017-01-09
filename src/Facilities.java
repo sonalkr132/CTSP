@@ -5,22 +5,11 @@ import java.util.*;
 public class Facilities {
   public double[][] map;
   public int no_of_facilities;
-  private double MAX_DIST = 1000000.0;
   
   Facilities(int num){
     no_of_facilities = num;
   }
    
-   // loads the fixed map of cities
-   public void load_fixed_distances(){
-     map = new double[][]{ {MAX_DIST,       26, 12, 9,       4},
-        {26, MAX_DIST,        3,       17,       19},
-        {12,        3, MAX_DIST,        9,       21},
-        {9,        17,        9, MAX_DIST,        7},
-        {4,        19,       21,        7, MAX_DIST}
-      };
-   }
-
    public void load_csp_points(String filename) {
      int[][] ary = new int[no_of_facilities][2];
 
@@ -44,7 +33,7 @@ public class Facilities {
    
    public int find_nearest_facility(int facility){
      int idx = 0;
-     double min_dist = MAX_DIST;
+     double min_dist = 100000.0;
      for(int i = 0; i < no_of_facilities; i++){
        if(min_dist > map[facility][i]){
          min_dist = map[facility][i];

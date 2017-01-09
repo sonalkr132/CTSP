@@ -12,10 +12,10 @@ public class Chromosome {
   int []visited_facilities;
   int ITR_LIMIT = 100;
 
-  Chromosome(FacilitiesAllocation cust_allocation, Facilities _facilities){
+  Chromosome(FacilitiesAllocation f_allocation, Facilities _facilities){
     genes = new ArrayList<Integer>();
     facilities = _facilities;
-    fallocation = new FacilitiesAllocation(cust_allocation);
+    fallocation = new FacilitiesAllocation(f_allocation);
     visited_facilities = new int[facilities.no_of_facilities];
  
     covered_facilities = 0;
@@ -32,6 +32,14 @@ public class Chromosome {
     facilities = c.facilities;
     visited_facilities = c.visited_facilities.clone();
     fallocation = new FacilitiesAllocation(c.fallocation);
+  }
+  
+  Chromosome(double s, ArrayList<Integer> g, FacilitiesAllocation fa, Facilities f, int []v){
+    score = s;
+    genes = new ArrayList<Integer>(g);
+    facilities = f;
+    fallocation = new FacilitiesAllocation(fa);
+    visited_facilities = v.clone();
   }
   
   public void add_next_facility(){
@@ -90,7 +98,7 @@ public class Chromosome {
   }
   
   public void recover(FacilitiesAllocation ca){
-    remove_duplicates(ca);
+    recover_validity(ca);
     ArrayList<Integer> unvisited_facilites = unvisited_facilities();
     unvisited_facilites = ca.sort(unvisited_facilites);
 
@@ -101,14 +109,17 @@ public class Chromosome {
     score = evaluate(facilities.map);
   }
   
-  public void remove_duplicates(FacilitiesAllocation original_fa){
+  public void recover_validity(FacilitiesAllocation original_fa){
     ArrayList<Integer> dup = new ArrayList<Integer>();
     Iterator<Integer> iterator = genes.iterator();
+    
+    //remove duplicates
     while(iterator.hasNext()){
       int gene = (int) iterator.next();
       if(!dup.contains(gene)) dup.add(gene);
     }
     
+    //re-assign allocation matrix
     genes.clear();
     fallocation = new FacilitiesAllocation(original_fa);
     covered_facilities = 0;

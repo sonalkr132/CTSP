@@ -24,6 +24,13 @@ public class Population {
     facilities.load_csp_points(filename);
     f_allocation.allocate_facilities(nc, facilities.map);
   }
+  
+  Population(int p_size, Facilities f, FacilitiesAllocation fa){
+    population_size = p_size;
+    facilities = f;
+    f_allocation = fa;
+    chromosomes = new Chromosome[population_size];
+  }
    
    //Intializes chromosomes with random chromosomes
    // also set the best scores array, best_score and best chromosome for current generation
@@ -123,14 +130,14 @@ public class Population {
     parent2.recover(f_allocation);
   }
   
-  private void copy_genes(Chromosome parent1, Chromosome parent2, int cp, int end){
-    ArrayList<Integer> p2_genes = parent2.genes;
+  public void copy_genes(Chromosome parent1, Chromosome parent2, int cp, int end){
+    ArrayList<Integer> p2_genes = new ArrayList<Integer>(parent2.genes);
       
     ArrayList<Integer> child_left = new ArrayList<Integer>(parent1.genes.subList(0, cp));
-    ArrayList<Integer> child_right = new ArrayList<Integer>(p2_genes.subList(cp, end));
+    ArrayList<Integer> child_right = new ArrayList<Integer>(parent2.genes.subList(cp, end));
     child_left.addAll(child_right);
-    if(p2_genes.size() > parent1.genes.size()) {
-      ArrayList<Integer> child_longer = new ArrayList<Integer>(p2_genes.subList(end, p2_genes.size()));
+    if(parent2.genes.size() > parent1.genes.size()) {
+      ArrayList<Integer> child_longer = new ArrayList<Integer>(parent2.genes.subList(end, parent2.genes.size()));
       child_left.addAll(child_longer);
     }
     parent2.genes = child_left;
@@ -139,7 +146,7 @@ public class Population {
     child_right = new ArrayList<Integer>(parent1.genes.subList(cp, end));
     child_left.addAll(child_right);
     if(p2_genes.size() < parent1.genes.size()) {
-      ArrayList<Integer> child_longer = new ArrayList<Integer>(parent1.genes.subList(end, p2_genes.size()));
+      ArrayList<Integer> child_longer = new ArrayList<Integer>(parent1.genes.subList(end, parent1.genes.size()));
       child_left.addAll(child_longer);
     }
     parent1.genes = child_left;

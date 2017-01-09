@@ -8,8 +8,7 @@ public class FacilitesTest {
 
   @Before
   public void setUp() throws Exception {
-    facility = new Facilities(5);
-    facility.load_fixed_distances();
+    facility = new FacilitiesStub();
   }
 
   @Test

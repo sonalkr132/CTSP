@@ -8,20 +8,20 @@ import org.junit.Test;
 
 public class ChromosomeTest {
   private Chromosome empty_ch;
-  private FacilitesStub f_stub;
-  private FacilitiesAllocationStub ca_stub;
+  private FacilitiesStub f_stub;
+  private FacilitiesAllocationStub fa_stub;
   private int PRIZE = 20;
   @Before
   public void setUp() throws Exception {
-    ca_stub = new FacilitiesAllocationStub();
-    f_stub = new FacilitesStub();
+    fa_stub = new FacilitiesAllocationStub();
+    f_stub = new FacilitiesStub();
 
     empty_ch = new Chromosome(
-        0,
-        0,
+        0.0,
         new ArrayList<Integer>(),
-        new FacilitesStub(),
-        new FacilitiesAllocationStub());
+        new FacilitiesAllocationStub(),
+        new FacilitiesStub(),
+        new int[5]);
   }
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -30,24 +30,24 @@ public class ChromosomeTest {
 
   @Test
   public void test_constructor(){
-    Chromosome ch = new Chromosome(ca_stub, f_stub, PRIZE);
-    assertTrue(ch.collected_prize > PRIZE);
+    Chromosome ch = new Chromosome(fa_stub, f_stub);
+    assertTrue(ch.covered_facilities > PRIZE);
     assertTrue(ch.score > 0.0);
     assertTrue(ch.genes.size() < 6);
   }
   
   @Test
   public void test_copy_constrctor(){
-    Chromosome ch = new Chromosome(ca_stub, f_stub, PRIZE);
-    Chromosome copy_ch = new Chromosome(ch.score, ch.collected_prize, ch.genes, ch.facilites, ch.fallocation);
+    Chromosome ch = new Chromosome(fa_stub, f_stub);
+    Chromosome copy_ch = new Chromosome(ch);
     
     ch.genes.clear();
-    ch.collected_prize = 0;
+    ch.covered_facilities = 0;
     ch.score = 0.0;
     assertFalse(copy_ch.genes.size() == ch.genes.size());
-    assertFalse(copy_ch.collected_prize == ch.collected_prize);
+    assertFalse(copy_ch.covered_facilities == ch.covered_facilities);
     assertFalse(copy_ch.score == ch.score);
-    assertNotNull(copy_ch.facilites);
+    assertNotNull(copy_ch.facilities);
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -62,26 +62,26 @@ public class ChromosomeTest {
     
     int added_facility = empty_ch.genes.get(0);
     assertArrayEquals(row0, empty_ch.fallocation.allocation[added_facility]);
-    assertEquals(0, empty_ch.fallocation.customers_per_facility[added_facility]);
-    assertEquals(ca_stub.customers_per_facility[added_facility], empty_ch.collected_prize);
+    assertEquals(0, empty_ch.fallocation.facility_coverage[added_facility]);
+    assertEquals(fa_stub.facility_coverage[added_facility], empty_ch.covered_facilities);
   }
   
   @Test
   public void test_add_next_facility_when_genes_not_empty(){
     empty_ch.genes.add(2);
-    empty_ch.fallocation.customers_per_facility[2] = 0;
-    empty_ch.collected_prize = 8;
-    for(int i = 0; i < empty_ch.fallocation.number_of_customers; i++)
+    empty_ch.fallocation.facility_coverage[2] = 0;
+    empty_ch.covered_facilities = 8;
+    for(int i = 0; i < empty_ch.fallocation.number_of_facilities; i++)
       empty_ch.fallocation.allocation[2][i] = 0; 
     
     empty_ch.add_next_facility();
     int added_facility = empty_ch.genes.get(1);
     int []row0 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    int expected_prize = 8 + ca_stub.customers_per_facility[added_facility];
+    int expected_prize = 8 + fa_stub.facility_coverage[added_facility];
  
     assertEquals(2, empty_ch.genes.size());
     assertArrayEquals(row0, empty_ch.fallocation.allocation[added_facility]);
-    assertEquals(expected_prize, empty_ch.collected_prize);
+    assertEquals(expected_prize, empty_ch.covered_facilities);
   }
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -90,15 +90,15 @@ public class ChromosomeTest {
   
   @Test
   public void test_recover(){
-    Chromosome ch = new Chromosome(ca_stub, f_stub, PRIZE);
+    Chromosome ch = new Chromosome(fa_stub, f_stub);
     ch.genes.clear();
     ch.genes.addAll(Arrays.asList(3, 2, 3, 2));
     
-    ch.recover(ca_stub);
+    ch.recover(fa_stub);
     ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(3, 2, 4));
     assertTrue(ch.genes.equals(expected_genes));
     assertEquals(ch.score, 55.0, 0.001);
-    assertEquals(ch.collected_prize, 21);
+    assertEquals(ch.covered_facilities, 21);
   }
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -119,11 +119,11 @@ public class ChromosomeTest {
   
   @Test
   public void test_remove_duplicates_when_genes_has_duplicates(){
-    Chromosome ch = new Chromosome(ca_stub, f_stub, PRIZE);
+    Chromosome ch = new Chromosome(fa_stub, f_stub);
     ch.genes.clear();
     ch.genes.addAll(Arrays.asList(3, 2, 3, 2));
     FacilitiesAllocation original_ca = new FacilitiesAllocationStub();
-    ch.remove_duplicates(original_ca);
+    ch.recover_validity(original_ca);
     
     ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(3, 2));
     assertTrue(ch.genes.equals(expected_genes));
@@ -132,16 +132,16 @@ public class ChromosomeTest {
     assertArrayEquals(row0, ch.fallocation.allocation[2]);
     int []row = {0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
     assertArrayEquals(row, ch.fallocation.allocation[0]);
-    assertEquals(14, ch.collected_prize);
+    assertEquals(14, ch.covered_facilities);
   }
   
   @Test
   public void test_remove_duplicates_when_genes_does_not_have_duplicates(){
-    Chromosome ch = new Chromosome(ca_stub, f_stub, PRIZE);
+    Chromosome ch = new Chromosome(fa_stub, f_stub);
     ch.genes.clear();
     ch.genes.addAll(Arrays.asList(3, 2, 4));
     FacilitiesAllocation original_ca = new FacilitiesAllocationStub();
-    ch.remove_duplicates(original_ca);
+    ch.recover_validity(original_ca);
     
     ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(3, 2, 4));
     assertTrue(ch.genes.equals(expected_genes));
@@ -161,8 +161,8 @@ public class ChromosomeTest {
   
   @Test
   public void test_unvisited_facilities_when_genes_is_not_empty(){
-    empty_ch.genes.add(2); empty_ch.fallocation.customers_per_facility[2] = 0;
-    empty_ch.fallocation.customers_per_facility[0] = 0;
+    empty_ch.genes.add(2); empty_ch.fallocation.facility_coverage[2] = 0;
+    empty_ch.fallocation.facility_coverage[0] = 0;
     
     ArrayList<Integer> unvisited_facilites = empty_ch.unvisited_facilities();
     ArrayList<Integer> expected_facilites = new ArrayList<Integer>(Arrays.asList(1, 3, 4));
@@ -209,15 +209,15 @@ public class ChromosomeTest {
   public void test_adding_and_removing_facility(){
     empty_ch.add_facility(0, 3);
     
-    assertEquals(0, empty_ch.fallocation.customers_per_facility[3]);
-    assertEquals(6, empty_ch.collected_prize);
+    assertEquals(0, empty_ch.fallocation.facility_coverage[3]);
+    assertEquals(6, empty_ch.covered_facilities);
     
-    empty_ch.remove_facility(0, ca_stub);
-    assertEquals(6, empty_ch.fallocation.customers_per_facility[3]);
-    assertEquals(0, empty_ch.collected_prize);
+    empty_ch.remove_facility(0, fa_stub);
+    assertEquals(6, empty_ch.fallocation.facility_coverage[3]);
+    assertEquals(0, empty_ch.covered_facilities);
     
-    for(int i = 0; i < ca_stub.number_of_facilities; i++){
-      assertArrayEquals(empty_ch.fallocation.allocation[i], ca_stub.allocation[i]);
+    for(int i = 0; i < fa_stub.number_of_facilities; i++){
+      assertArrayEquals(empty_ch.fallocation.allocation[i], fa_stub.allocation[i]);
     }
   }
   
