@@ -1,5 +1,5 @@
 
-public class CustomersAllocationStub extends CustomersAllocation {
+public class CustomersAllocationStub extends FacilitiesAllocation {
   CustomersAllocationStub(){
     super(30, 5);
     int [][]tmp_allocation = {

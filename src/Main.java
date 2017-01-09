@@ -5,41 +5,30 @@ import java.io.*;
 public class Main {
   public static void main(String[] args) {
     int NUMBER_OF_FACILITES = 51;
-    int NUMBER_OF_CUSTOMERS = 51;
     int POPULATION_SIZE = 30;
-    int PRIZE = 51;
-    int NUM_OF_ITR = 20000;
-    boolean TSPLIB = false;
-    Population p = new Population(NUMBER_OF_FACILITES, NUMBER_OF_CUSTOMERS, POPULATION_SIZE, PRIZE); //number of points, population size
+    int NUM_OF_ITR = 50000;
+    int NC = 7;
+    String file_to_read = "/home/addie/current/tsplib/eil51.tsp";
+    Population p = new Population(NUMBER_OF_FACILITES, POPULATION_SIZE, NC, file_to_read); //number of points, population size
     
-    if(TSPLIB){
-      p.tsplib_cities("/home/addie/current/tsplib/eil51.tsp", "points");
-      p.allocate_customers("/home/addie/current/tsplib/eil51.tsp", 5);
-    } else{
-      //p.fixed_point_facilites();
-      //p.random_point_facilites(100);
-      //p.allocate_customers();
-      p.csp_cities("/home/addie/current/tsplib/eil51.tsp");
-      p.allocate_customers("/home/addie/current/tsplib/eil51.tsp", 7);
-    }
 
     //customers allocation
     System.out.println("\n\nAllocation(facilites x customers): \n");
     for(int i = 0; i < NUMBER_OF_FACILITES; i++){
-      for(int j = 0; j < NUMBER_OF_CUSTOMERS; j++){
-        System.out.print(p.cust_allocation.allocation[i][j] + ", ");
+      for(int j = 0; j < NUMBER_OF_FACILITES; j++){
+        System.out.print(p.f_allocation.allocation[i][j] + ", ");
       }
       System.out.println();
     }
-    
-    //customers allocation per facility
-    System.out.println("\nCustomers per facility: \n");
+//    
+//    //customers allocation per facility
+//    System.out.println("\nCustomers per facility: \n");
     for(int i = 0; i < NUMBER_OF_FACILITES; i++){
       System.out.print(i + " ");
     }
     System.out.println();
     for(int i = 0; i < NUMBER_OF_FACILITES; i++){
-      System.out.print(p.cust_allocation.customers_per_facility[i] + " ");
+      System.out.print(p.f_allocation.facility_coverage[i] + " ");
     }
     
     
@@ -75,6 +64,7 @@ public class Main {
         break;
       }
     }
+    print_best_chromosome(p);
     long endTime = System.nanoTime();
     System.out.println("Took "+(endTime - startTime) / 1000000000.0 + " s"); 
   }
@@ -82,7 +72,7 @@ public class Main {
   private static void print_best_chromosome(Population p){
     System.out.println("\n\nBest Chromosome score and genes:\n");
     ArrayList<Integer> genes = p.alltime_best_chromosome.genes;
-    System.out.print("[" + p.alltime_best_chromosome.score + "] "+ "[" + p.alltime_best_chromosome.collected_prize + "] ");
+    System.out.print("[" + p.alltime_best_chromosome.score + "] "+ "[" + p.alltime_best_chromosome.covered_facilities + "] ");
     for(int j = 0; j < genes.size(); j++){
       System.out.print(genes.get(j) + " ");
     }
@@ -92,7 +82,7 @@ public class Main {
     System.out.println("\n\nAll Chromosome score and genes:\n");
     for(int i = 0; i < POPULATION_SIZE; i++){
       ArrayList<Integer> genes = p.chromosomes[i].genes;
-      System.out.print("[" + p.chromosomes[i].score + "] " + "[" + p.chromosomes[i].collected_prize + "] ");
+      System.out.print("[" + p.chromosomes[i].score + "] " + "[" + p.chromosomes[i].covered_facilities + "] ");
       for(int j = 0; j < genes.size(); j++){
         System.out.print(genes.get(j) + " ");
       }

@@ -4,65 +4,32 @@ import java.util.Random;
 
 public class Population {
   public Chromosome[] chromosomes;
-  public int population_size, no_of_facilites, prize, no_of_customers;
+  public int population_size, nc;
   private double crossover_prob, mutation_prob;
   public double[] roulette;
-  public Facilites facilites;
-  public CustomersAllocation cust_allocation;
+  public Facilities facilities;
+  public FacilitiesAllocation f_allocation;
   public Chromosome current_best_chromosome, alltime_best_chromosome;
   public double best_score;
   
-  Population(int _facilites_size, int _customers_size, int _population_size, int _prize){
+  Population(int facilites_size, int _population_size, int _nc, String filename){
     population_size = _population_size;
     crossover_prob = 0.9;
-    mutation_prob = 0.01;
-    no_of_facilites = _facilites_size;
-    no_of_customers = _customers_size;
-    prize = _prize;
+    mutation_prob = 0.05;
+    nc = _nc;
 
     chromosomes = new Chromosome[population_size];
+    facilities = new Facilities(facilites_size);
+    f_allocation = new FacilitiesAllocation(facilites_size);
+    facilities.load_csp_points(filename);
+    f_allocation.allocate_facilities(nc, facilities.map);
   }
-  
-  // loads 5x5 matrix of cities' map
-  public void fixed_point_facilites(){
-    facilites = new Facilites(no_of_facilites);
-    facilites.load_fixed_distances();
-  }
-  
-  // Generates @points_size number of random cities in given range
-  public void random_point_facilites(int dist_range){
-    facilites = new Facilites(no_of_facilites);
-    facilites.gen_random_facilites(dist_range);
-  }
-  
-  //Loads cities data from tsplib file
-  public void tsplib_cities(String filename, String type){
-    facilites = new Facilites(no_of_facilites);
-    if(type == "dist") facilites.load_tsplib(filename);
-    else if(type == "points") facilites.load_tsplib_points(filename);
-  }
-  
-  public void csp_cities(String filename) {
-    facilites = new Facilites(no_of_facilites);
-    facilites.load_csp_points(filename);
-  }
-  
-  public void allocate_random_customers(){
-    cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
-    cust_allocation.allocate_random_customers();
-  }
-  
-  //only supported type is points
-  public void allocate_customers(String filename, int num){
-    cust_allocation = new CustomersAllocation(no_of_customers, no_of_facilites);
-    cust_allocation.allocate_customers(filename, num, facilites.map);
-  }
-    
+   
    //Intializes chromosomes with random chromosomes
    // also set the best scores array, best_score and best chromosome for current generation
   public void initialize_population(){
     for(int i = 0; i < population_size; i++){
-      Chromosome chromosome = new Chromosome(cust_allocation, facilites, prize);
+      Chromosome chromosome = new Chromosome(f_allocation, facilities);
       chromosomes[i] = chromosome;
     }
   
@@ -90,7 +57,7 @@ public class Population {
       if(two_opt == 1){
         chromosomes[i].two_opt();
       } else {
-        chromosomes[i].drop_and_procedures(cust_allocation, prize);
+        chromosomes[i].drop_and_procedures(f_allocation);
       }
     }
   }
@@ -98,45 +65,29 @@ public class Population {
   //selection has elitism of 4.
   // It uses roulette wheel selection
   private void selection(){
-    Chromosome[] parents = new Chromosome[population_size];
-    parents[0] = new Chromosome(current_best_chromosome.score,
-        current_best_chromosome.collected_prize, 
-        current_best_chromosome.genes, 
-        current_best_chromosome.facilites,
-        current_best_chromosome.callocation);
-    parents[1] = new Chromosome(alltime_best_chromosome.score,
-        alltime_best_chromosome.collected_prize, 
-        alltime_best_chromosome.genes, 
-        alltime_best_chromosome.facilites,
-        alltime_best_chromosome.callocation);
-    parents[2] = new Chromosome(alltime_best_chromosome.score,
-        alltime_best_chromosome.collected_prize, 
-        alltime_best_chromosome.genes, 
-        alltime_best_chromosome.facilites,
-        alltime_best_chromosome.callocation);
-    parents[2].mutate(cust_allocation, prize);
-    parents[3] = new Chromosome(current_best_chromosome.score,
-        current_best_chromosome.collected_prize, 
-        current_best_chromosome.genes, 
-        current_best_chromosome.facilites,
-        current_best_chromosome.callocation);
-    parents[3].mutate(cust_allocation, prize);
+    Chromosome[] childrens = new Chromosome[population_size];
+    childrens[0] = new Chromosome(current_best_chromosome);
+    childrens[1] = new Chromosome(alltime_best_chromosome);
+    childrens[2] = new Chromosome(alltime_best_chromosome);
+    childrens[2].mutate(f_allocation);
+    childrens[3] = new Chromosome(current_best_chromosome);
+    childrens[3].mutate(f_allocation);
 
     set_roulette();
 
     Random prang = new Random();
     for(int i = 4; i < population_size; i++){
       Chromosome c = chromosomes[spin_wheel(prang.nextInt(100))];
-      parents[i] = new Chromosome(c.score, c.collected_prize, c.genes, c.facilites, c.callocation);
+      childrens[i] = new Chromosome(c);
     }
 
-    chromosomes = parents;
+    chromosomes = childrens;
   }
   
   private void mutation(){
     for(int i = 0; i < population_size; i++) {
       if(Math.random() < mutation_prob) {
-        chromosomes[i].mutate(cust_allocation, prize);
+        chromosomes[i].mutate(f_allocation);
         i--;
       }
     }
@@ -162,40 +113,40 @@ public class Population {
     Chromosome parent2 = chromosomes[y];
     
     Random rand = new Random();
-    int smaller_size = get_smaller_size(parent1.genes, parent2.genes);
+    Chromosome smaller_parent = get_smaller_parent(parent1, parent2);
+    int smaller_size = smaller_parent.genes.size();
 
-    int m = 1 + rand.nextInt(smaller_size - 1);
-    copy_genes(parent1, parent2, m);
+    int m = rand.nextInt(smaller_size);
+    copy_genes(parent1, parent2, m, smaller_size);
     
-    parent1.recover(prize, cust_allocation);
-    parent2.recover(prize, cust_allocation);
+    parent1.recover(f_allocation);
+    parent2.recover(f_allocation);
   }
   
-  public void copy_genes(Chromosome parent1, Chromosome parent2, int cp){
+  private void copy_genes(Chromosome parent1, Chromosome parent2, int cp, int end){
     ArrayList<Integer> p2_genes = parent2.genes;
-    ArrayList<Integer> p1_genes = parent1.genes;
-    
-    //generating first child genes
-    ArrayList<Integer> child_left = new ArrayList<Integer>(p1_genes.subList(0, cp));
-    int nearest_facility = facilites.find_nearest_facility(p1_genes.get(cp - 1));
-    int cp2 = parent2.find_facility_index(nearest_facility);
-    ArrayList<Integer> child_right = new ArrayList<Integer>(p2_genes.subList(cp2, p2_genes.size()));
+      
+    ArrayList<Integer> child_left = new ArrayList<Integer>(parent1.genes.subList(0, cp));
+    ArrayList<Integer> child_right = new ArrayList<Integer>(p2_genes.subList(cp, end));
     child_left.addAll(child_right);
-    
+    if(p2_genes.size() > parent1.genes.size()) {
+      ArrayList<Integer> child_longer = new ArrayList<Integer>(p2_genes.subList(end, p2_genes.size()));
+      child_left.addAll(child_longer);
+    }
     parent2.genes = child_left;
-
-    //generating second child genes
-    child_left = new ArrayList<Integer>(p2_genes.subList(0, cp));
-    nearest_facility = facilites.find_nearest_facility(p2_genes.get(cp - 1));
-    cp2 = parent1.find_facility_index(nearest_facility);
-    child_right = new ArrayList<Integer>(p1_genes.subList(cp2, p1_genes.size()));
-    child_left.addAll(child_right);
     
+    child_left = new ArrayList<Integer>(p2_genes.subList(0, cp));
+    child_right = new ArrayList<Integer>(parent1.genes.subList(cp, end));
+    child_left.addAll(child_right);
+    if(p2_genes.size() < parent1.genes.size()) {
+      ArrayList<Integer> child_longer = new ArrayList<Integer>(parent1.genes.subList(end, p2_genes.size()));
+      child_left.addAll(child_longer);
+    }
     parent1.genes = child_left;
   }
   
-  private int get_smaller_size(ArrayList<Integer> a, ArrayList<Integer> b){
-    return (a.size() > b.size() ? b.size() : a.size());
+  private Chromosome get_smaller_parent(Chromosome a, Chromosome b){
+    return (a.genes.size() > b.genes.size() ? b : a);
   }
   
   //evaluates the best score of current population and changes
@@ -213,11 +164,7 @@ public class Population {
     current_best_chromosome = chromosomes[current_best_idx];
   
     if (alltime_best_chromosome == null || best_score > current_best){
-      alltime_best_chromosome = new Chromosome(chromosomes[current_best_idx].score, 
-          chromosomes[current_best_idx].collected_prize, 
-          chromosomes[current_best_idx].genes, 
-          chromosomes[current_best_idx].facilites,
-          chromosomes[current_best_idx].callocation);
+      alltime_best_chromosome = new Chromosome(chromosomes[current_best_idx]);
       best_score = current_best;
     }
   }

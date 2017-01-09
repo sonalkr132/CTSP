@@ -4,11 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class FacilitesTest {
-  private Facilites facility;
+  private Facilities facility;
 
   @Before
   public void setUp() throws Exception {
-    facility = new Facilites(5);
+    facility = new Facilities(5);
     facility.load_fixed_distances();
   }
 

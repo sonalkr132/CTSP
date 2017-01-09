@@ -4,13 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class CustomersAllocationTest {
-  private CustomersAllocation ca;
+  private FacilitiesAllocation ca;
   private int number_of_customers = 30;
   private int number_of_facilites = 5;
 
   @Before
   public void setUp() throws Exception {
-    ca = new CustomersAllocation(number_of_customers, number_of_facilites);
+    ca = new FacilitiesAllocation(number_of_customers, number_of_facilites);
   }
   
   @Test
@@ -30,11 +30,11 @@ public class CustomersAllocationTest {
   @Test
   public void copy_constructor(){
     //ca.allocate_customers();
-    CustomersAllocation copy_ca = new CustomersAllocation(ca);
+    FacilitiesAllocation copy_ca = new FacilitiesAllocation(ca);
     ca.customers_per_facility[0] = 0;
     assertNotEquals(copy_ca.customers_per_facility[0], 0);
-    ca.facilites_set[0] = 1;
-    assertTrue(copy_ca.facilites_set[0] != ca.facilites_set[0]);
+    ca.facilities_set[0] = 1;
+    assertTrue(copy_ca.facilities_set[0] != ca.facilities_set[0]);
     ca.allocation[0][0] = 2;
     assertTrue(copy_ca.allocation[0][0] != ca.allocation[0][0]);
   }
