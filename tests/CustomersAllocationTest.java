@@ -10,7 +10,7 @@ public class CustomersAllocationTest {
 
   @Before
   public void setUp() throws Exception {
-    ca = new FacilitiesAllocation(number_of_customers, number_of_facilites);
+    ca = new FacilitiesAllocation(number_of_facilites);
   }
   
   @Test
@@ -18,7 +18,7 @@ public class CustomersAllocationTest {
     //ca.allocate_customers();
     
     int facility_sum = 0, allocation_sum = 0;
-    for(int i = 0; i < number_of_facilites; i++) facility_sum += ca.customers_per_facility[i];
+    for(int i = 0; i < number_of_facilites; i++) facility_sum += ca.facility_coverage[i];
     for(int i = 0; i < number_of_facilites; i++){
       for(int j = 0; j < number_of_customers; j++) allocation_sum += ca.allocation[i][j];
     }
@@ -31,8 +31,8 @@ public class CustomersAllocationTest {
   public void copy_constructor(){
     //ca.allocate_customers();
     FacilitiesAllocation copy_ca = new FacilitiesAllocation(ca);
-    ca.customers_per_facility[0] = 0;
-    assertNotEquals(copy_ca.customers_per_facility[0], 0);
+    ca.facility_coverage[0] = 0;
+    assertNotEquals(copy_ca.facility_coverage[0], 0);
     ca.facilities_set[0] = 1;
     assertTrue(copy_ca.facilities_set[0] != ca.facilities_set[0]);
     ca.allocation[0][0] = 2;

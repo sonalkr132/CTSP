@@ -9,11 +9,11 @@ import org.junit.Test;
 public class ChromosomeTest {
   private Chromosome empty_ch;
   private FacilitesStub f_stub;
-  private CustomersAllocationStub ca_stub;
+  private FacilitiesAllocationStub ca_stub;
   private int PRIZE = 20;
   @Before
   public void setUp() throws Exception {
-    ca_stub = new CustomersAllocationStub();
+    ca_stub = new FacilitiesAllocationStub();
     f_stub = new FacilitesStub();
 
     empty_ch = new Chromosome(
@@ -21,7 +21,7 @@ public class ChromosomeTest {
         0,
         new ArrayList<Integer>(),
         new FacilitesStub(),
-        new CustomersAllocationStub());
+        new FacilitiesAllocationStub());
   }
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ public class ChromosomeTest {
     Chromosome ch = new Chromosome(ca_stub, f_stub, PRIZE);
     ch.genes.clear();
     ch.genes.addAll(Arrays.asList(3, 2, 3, 2));
-    FacilitiesAllocation original_ca = new CustomersAllocationStub();
+    FacilitiesAllocation original_ca = new FacilitiesAllocationStub();
     ch.remove_duplicates(original_ca);
     
     ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(3, 2));
@@ -140,7 +140,7 @@ public class ChromosomeTest {
     Chromosome ch = new Chromosome(ca_stub, f_stub, PRIZE);
     ch.genes.clear();
     ch.genes.addAll(Arrays.asList(3, 2, 4));
-    FacilitiesAllocation original_ca = new CustomersAllocationStub();
+    FacilitiesAllocation original_ca = new FacilitiesAllocationStub();
     ch.remove_duplicates(original_ca);
     
     ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(3, 2, 4));

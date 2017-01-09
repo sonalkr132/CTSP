@@ -9,11 +9,11 @@ import org.junit.Test;
 public class PopulationTest {
   private Population p;
   private FacilitesStub f_stub;
-  private CustomersAllocationStub ca_stub;
+  private FacilitiesAllocationStub ca_stub;
 
   @Before
   public void setUp() throws Exception {
-    ca_stub = new CustomersAllocationStub();
+    ca_stub = new FacilitiesAllocationStub();
     f_stub = new FacilitesStub();
     p = new Population(5, 30, 30, 20);
   }
