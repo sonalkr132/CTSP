@@ -3,9 +3,9 @@ import java.util.ArrayList;
 public class Main {
   public static void main(String[] args) {
     int NUMBER_OF_FACILITES = 51;
-    int POPULATION_SIZE = 30;
+    int POPULATION_SIZE = 20;
     int NUM_OF_ITR = 50000;
-    int NC =11;
+    int NC = 7;
     String file_to_read = "/home/addie/current/tsplib/eil51.tsp";
     Population p = new Population(NUMBER_OF_FACILITES, POPULATION_SIZE, NC, file_to_read); //number of points, population size
     

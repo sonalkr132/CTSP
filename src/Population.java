@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
+import java.util.*;
 
 public class Population {
   public Chromosome[] chromosomes;
@@ -44,16 +42,36 @@ public class Population {
   }
   
   public void next_generation(){
+    Chromosome []initial_chromosomes = new Chromosome[population_size];
+    for(int i =0; i < population_size; i++) initial_chromosomes[i] = new Chromosome(chromosomes[i]);
+ 
     selection();
     crossover();
-    //mutation();
-    //local_search();
+    mutation();
+    local_search();
     set_best_score();
-    survivor_selection();
+    //survivor_selection(initial_chromosomes);
   }
   
-  private void survivor_selection(){
+  private void survivor_selection(Chromosome []initial_chromosomes){
+    Chromosome []arr = new Chromosome[2*population_size];
+    System.arraycopy(initial_chromosomes, 0, arr, 0, population_size);
+    System.arraycopy(chromosomes, 0, arr, population_size, population_size);
+    Arrays.sort(arr, new FitnessComparator());
     
+    for(int i = 0; i <  (int)Math.floor(population_size/2); i++){
+      chromosomes[i] = arr[i];
+    }
+    
+    for(int i = (int)Math.floor(population_size/2); i < population_size; i++){
+      if(Math.random() < 0.5) chromosomes[i] = initial_chromosomes[i];
+    }
+  }
+  
+  public class FitnessComparator implements Comparator<Chromosome> {
+   public int compare(final Chromosome o1, final Chromosome o2) {
+      return Double.compare(o1.score, o2.score);
+    }
   }
  
   private void local_search(){
@@ -78,7 +96,7 @@ public class Population {
     childrens[2] = new Chromosome(alltime_best_chromosome);
     childrens[2].mutate(f_allocation);
     childrens[3] = new Chromosome(current_best_chromosome);
-    //childrens[3].mutate(f_allocation);
+    childrens[3].mutate(f_allocation);
 
     set_roulette();
 
@@ -126,6 +144,9 @@ public class Population {
     int m = rand.nextInt(smaller_size);
     copy_genes(parent1, parent2, m, smaller_size);
     
+//    int m = 1 + rand.nextInt(smaller_size - 1);
+//    copy_genes(parent1, parent2, m);
+    
     parent1.recover(f_allocation);
     parent2.recover(f_allocation);
   }
@@ -149,6 +170,29 @@ public class Population {
       ArrayList<Integer> child_longer = new ArrayList<Integer>(parent1.genes.subList(end, parent1.genes.size()));
       child_left.addAll(child_longer);
     }
+    parent1.genes = child_left;
+  }
+  
+  public void copy_genes(Chromosome parent1, Chromosome parent2, int cp){
+    ArrayList<Integer> p2_genes = parent2.genes;
+    ArrayList<Integer> p1_genes = parent1.genes;
+    
+    //generating first child genes
+    ArrayList<Integer> child_left = new ArrayList<Integer>(p1_genes.subList(0, cp));
+    int nearest_facility = facilities.find_nearest_facility(p1_genes.get(cp - 1));
+    int cp2 = parent2.find_facility_index(nearest_facility);
+    ArrayList<Integer> child_right = new ArrayList<Integer>(p2_genes.subList(cp2, p2_genes.size()));
+    child_left.addAll(child_right);
+    
+    parent2.genes = child_left;
+
+    //generating second child genes
+    child_left = new ArrayList<Integer>(p2_genes.subList(0, cp));
+    nearest_facility = facilities.find_nearest_facility(p2_genes.get(cp - 1));
+    cp2 = parent1.find_facility_index(nearest_facility);
+    child_right = new ArrayList<Integer>(p1_genes.subList(cp2, p1_genes.size()));
+    child_left.addAll(child_right);
+    
     parent1.genes = child_left;
   }
   

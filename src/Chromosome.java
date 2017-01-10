@@ -43,7 +43,6 @@ public class Chromosome {
   }
   
   public void add_next_facility(){
-    //find facilities with at least one customers allocation
     int f;
     ArrayList<Integer> unvisited_facilities = unvisited_facilities();
     Random rand = new Random();
@@ -225,21 +224,17 @@ public class Chromosome {
     Random rand = new Random();
     ArrayList<Integer> prev_genes = new ArrayList<Integer>(genes);
     FacilitiesAllocation prev_fallocation = new FacilitiesAllocation(fallocation);
-    double prev_score = score;
     int r_idx = rand.nextInt(genes.size());
     int r_facility = genes.get(r_idx);
     
-    remove_facility(r_idx, cust_allocation);
-    double removal_cost = facilities.map[get_prev_facility(r_idx)][r_facility] + facilities.map[r_facility][get_next_facility(r_idx)];
-    score -= removal_cost;
-    
+    remove_facility(r_idx, cust_allocation);    
     insert_mutation_for(r_facility);
 
     if(covered_facilities < facilities.no_of_facilities){
       genes = prev_genes;
-      score = prev_score;
       fallocation = prev_fallocation;
     }
+    score = evaluate(facilities.map);
   }
   
   public void insert_mutation_for(int r_facility){
@@ -269,7 +264,6 @@ public class Chromosome {
         }
       }
       add_facility(min_itr_idx, min_itr_facility);
-      score += min_dist;
     }
   }
   
