@@ -10,7 +10,6 @@ public class ChromosomeTest {
   private Chromosome empty_ch;
   private FacilitiesStub f_stub;
   private FacilitiesAllocationStub fa_stub;
-  private int PRIZE = 20;
   @Before
   public void setUp() throws Exception {
     fa_stub = new FacilitiesAllocationStub();
@@ -31,9 +30,9 @@ public class ChromosomeTest {
   @Test
   public void test_constructor(){
     Chromosome ch = new Chromosome(fa_stub, f_stub);
-    assertTrue(ch.covered_facilities > PRIZE);
+    assertEquals(ch.covered_facilities, f_stub.no_of_facilities);
     assertTrue(ch.score > 0.0);
-    assertTrue(ch.genes.size() < 6);
+    assertTrue(ch.genes.size() > 0);
   }
   
   @Test
@@ -57,10 +56,11 @@ public class ChromosomeTest {
   @Test
   public void test_add_next_facility_when_empty(){
     empty_ch.add_next_facility();
-    int []row0 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    int []row0 = {0, 0, 0, 0, 0};
     assertEquals(1, empty_ch.genes.size());
     
     int added_facility = empty_ch.genes.get(0);
+
     assertArrayEquals(row0, empty_ch.fallocation.allocation[added_facility]);
     assertEquals(0, empty_ch.fallocation.facility_coverage[added_facility]);
     assertEquals(fa_stub.facility_coverage[added_facility], empty_ch.covered_facilities);
@@ -69,23 +69,59 @@ public class ChromosomeTest {
   @Test
   public void test_add_next_facility_when_genes_not_empty(){
     empty_ch.genes.add(2);
-    empty_ch.fallocation.facility_coverage[2] = 0;
-    empty_ch.covered_facilities = 8;
-    for(int i = 0; i < empty_ch.fallocation.number_of_facilities; i++)
-      empty_ch.fallocation.allocation[2][i] = 0; 
+    empty_ch.covered_facilities = 3;
+    empty_ch.visited_facilities[2] = 1;
+    
+    int [][]allocation = {
+        {1, 0, 0, 0, 1}, 
+        {0, 0, 0, 0, 1}, 
+        {0, 0, 0, 0, 0}, 
+        {1, 0, 0, 0, 0}, 
+        {1, 0, 0, 0, 1}};
+    int []facility_coverage = {2, 1, 0, 1, 2 };
+    empty_ch.fallocation.allocation = allocation;
+    empty_ch.fallocation.facility_coverage = facility_coverage;
     
     empty_ch.add_next_facility();
     int added_facility = empty_ch.genes.get(1);
-    int []row0 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    int expected_prize = 8 + fa_stub.facility_coverage[added_facility];
+    int []row0 = {0, 0, 0, 0, 0};
  
     assertEquals(2, empty_ch.genes.size());
     assertArrayEquals(row0, empty_ch.fallocation.allocation[added_facility]);
-    assertEquals(expected_prize, empty_ch.covered_facilities);
+    assertTrue(empty_ch.covered_facilities > 3);
   }
   
   ///////////////////////////////////////////////////////////////////////////////////////////
-  //                                recover(                                               //
+  //                              remove_facility                                          //
+  ///////////////////////////////////////////////////////////////////////////////////////////
+
+  @Test
+  public void test_removing_facility(){
+    empty_ch.genes.add(1);
+    empty_ch.genes.add(2);
+    empty_ch.covered_facilities = 4;
+    empty_ch.visited_facilities[1] = 1;
+    empty_ch.visited_facilities[2] = 1;
+    
+    int [][]allocation = {
+        {1, 0, 0, 0, 0}, 
+        {0, 0, 0, 0, 0}, 
+        {0, 0, 0, 0, 0}, 
+        {1, 0, 0, 0, 0}, 
+        {1, 0, 0, 0, 0}};
+    int []facility_coverage = {1, 0, 0, 1, 1};
+    empty_ch.fallocation.allocation = allocation;
+    empty_ch.fallocation.facility_coverage = facility_coverage;
+
+    empty_ch.remove_facility(0, fa_stub);
+    assertEquals(1, empty_ch.fallocation.facility_coverage[3]);
+    assertEquals(3, empty_ch.covered_facilities);
+    int []expected_coverage = {2, 1, 0, 1, 2};
+    assertArrayEquals(expected_coverage, empty_ch.fallocation.facility_coverage);
+  }
+  
+  ///////////////////////////////////////////////////////////////////////////////////////////
+  //                                recover                                                //
   ///////////////////////////////////////////////////////////////////////////////////////////
   
   @Test
@@ -108,9 +144,9 @@ public class ChromosomeTest {
   @Test
   public void test_evaluate(){
     empty_ch.genes.addAll(Arrays.asList(1, 2, 3, 4));
-    //double score = empty_ch.evaluate(f_stub.map, f_stub.depot_dist);
+    double score = empty_ch.evaluate(f_stub.map);
     
-    //assertEquals(49.0, score, 0.001);
+    assertEquals(38.0, score, 0.001);
   }
   
   ///////////////////////////////////////////////////////////////////////////////////////////
@@ -127,12 +163,12 @@ public class ChromosomeTest {
     
     ArrayList<Integer> expected_genes = new ArrayList<Integer>(Arrays.asList(3, 2));
     assertTrue(ch.genes.equals(expected_genes));
-    int []row0 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    int []row0 = {0, 0, 0, 0, 0};
     assertArrayEquals(row0, ch.fallocation.allocation[3]);
     assertArrayEquals(row0, ch.fallocation.allocation[2]);
-    int []row = {0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0};
+    int []row = {0, 0, 0, 0, 1};
     assertArrayEquals(row, ch.fallocation.allocation[0]);
-    assertEquals(14, ch.covered_facilities);
+    assertEquals(4, ch.covered_facilities);
   }
   
   @Test
@@ -199,26 +235,6 @@ public class ChromosomeTest {
 
     assertFalse(empty_ch.check_better_opt(1, 2));
     assertTrue(empty_ch.genes.equals(expected_facilites));
-  }
-  
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  //                        adding_and_removing_facility                                   //
-  ///////////////////////////////////////////////////////////////////////////////////////////
-  
-  @Test
-  public void test_adding_and_removing_facility(){
-    empty_ch.add_facility(0, 3);
-    
-    assertEquals(0, empty_ch.fallocation.facility_coverage[3]);
-    assertEquals(6, empty_ch.covered_facilities);
-    
-    empty_ch.remove_facility(0, fa_stub);
-    assertEquals(6, empty_ch.fallocation.facility_coverage[3]);
-    assertEquals(0, empty_ch.covered_facilities);
-    
-    for(int i = 0; i < fa_stub.number_of_facilities; i++){
-      assertArrayEquals(empty_ch.fallocation.allocation[i], fa_stub.allocation[i]);
-    }
   }
   
    ///////////////////////////////////////////////////////////////////////////////////////////

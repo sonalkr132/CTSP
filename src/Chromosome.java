@@ -123,6 +123,7 @@ public class Chromosome {
     genes.clear();
     fallocation = new FacilitiesAllocation(original_fa);
     covered_facilities = 0;
+    visited_facilities = new int[facilities.no_of_facilities];
     for(int gene : dup) add_facility(genes.size(), gene);
   }
   
@@ -229,12 +230,21 @@ public class Chromosome {
     int r_facility = genes.get(r_idx);
     
     remove_facility(r_idx, cust_allocation);
-    ArrayList<Integer> unvisited_facilities = unvisited_facilities();
-    unvisited_facilities.remove(Integer.valueOf(r_facility));
-
     double removal_cost = facilities.map[get_prev_facility(r_idx)][r_facility] + facilities.map[r_facility][get_next_facility(r_idx)];
     score -= removal_cost;
     
+    insert_mutation_for(r_facility);
+
+    if(covered_facilities < facilities.no_of_facilities){
+      genes = prev_genes;
+      score = prev_score;
+      fallocation = prev_fallocation;
+    }
+  }
+  
+  public void insert_mutation_for(int r_facility){
+    ArrayList<Integer> unvisited_facilities = unvisited_facilities();
+    unvisited_facilities.remove(Integer.valueOf(r_facility));
     unvisited_facilities = facilities.sort(r_facility, unvisited_facilities);
     
     for(int i = 0; i < unvisited_facilities.size() && covered_facilities < facilities.no_of_facilities; i++){
@@ -261,36 +271,38 @@ public class Chromosome {
       add_facility(min_itr_idx, min_itr_facility);
       score += min_dist;
     }
-
-    if(covered_facilities < facilities.no_of_facilities){
-      genes = prev_genes;
-      score = prev_score;
-      fallocation = prev_fallocation;
-    }
   }
   
   public void remove_facility(int f_idx, FacilitiesAllocation original_allocation){
     //restore facility f customer allocation
     int f = genes.get(f_idx);
     visited_facilities[f] = 0;
+    genes.remove(f_idx);
     
     //iterating over allocation of f
     for(int i = 0; i < original_allocation.number_of_facilities; i++){
+      //found a facility allocated to facility f
       if(original_allocation.allocation[f][i] == 1){
-        //found a customer allocation to facility f
-        covered_facilities--;
+        //check if facility i is covered by another visited facility
+        boolean covered = false;
+        for(int c = 0; c < original_allocation.number_of_facilities && !covered; c++){
+          if(original_allocation.allocation[c][i] == 1 && genes.contains(c))
+            covered = true;
+        }
         
-        //find other facilities j which can cover allocation i
-        for(int j = 0; j < original_allocation.number_of_facilities; j++){
-          if(original_allocation.allocation[j][i] == 1 && visited_facilities[j] == 1){
-            covered_facilities++;
-          } else if(original_allocation.allocation[j][i] == 1) {
-            fallocation.facility_coverage[j]++;
-            fallocation.allocation[j][i] = 1;
+        if(!covered){
+          //coverage will decrease by 1
+          covered_facilities--;
+          
+          //find other facilities j which can cover i and assign allocation
+          for(int j = 0; j < original_allocation.number_of_facilities; j++){
+            if(original_allocation.allocation[j][i] == 1) {
+              fallocation.facility_coverage[j]++;
+              fallocation.allocation[j][i] = 1;
+            }
           }
         }
       }
     }
-    genes.remove(f_idx);
   }
 }

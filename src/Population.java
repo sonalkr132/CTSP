@@ -46,8 +46,8 @@ public class Population {
   public void next_generation(){
     selection();
     crossover();
-    mutation();
-    local_search();
+    //mutation();
+    //local_search();
     set_best_score();
     survivor_selection();
   }
@@ -78,7 +78,7 @@ public class Population {
     childrens[2] = new Chromosome(alltime_best_chromosome);
     childrens[2].mutate(f_allocation);
     childrens[3] = new Chromosome(current_best_chromosome);
-    childrens[3].mutate(f_allocation);
+    //childrens[3].mutate(f_allocation);
 
     set_roulette();
 
@@ -188,13 +188,6 @@ public class Population {
   //creates the roulette wheel used in selection
   // Fitness of chromosome, F(x) = 1/score(x)
   // Assume you have 10 items to choose from and you choose by generating
-  // a random number between 0 and 1. You divide the range 0 to 1 up into
-  // ten non-overlapping segments, each proportional to the fitness of one
-  // of the ten items. For example, this might look like this:
-  //0 - 0.3 is item 1
-  //0.3 - 0.4 is item 2
-  //0.4 - 0.5 is item 3
-  //0.5 - 0.57 is item 4...  
   private void set_roulette(){
     double sum = 0.0;
     double[] fitness = new double[population_size];

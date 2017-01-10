@@ -5,7 +5,7 @@ public class Main {
     int NUMBER_OF_FACILITES = 51;
     int POPULATION_SIZE = 30;
     int NUM_OF_ITR = 50000;
-    int NC = 7;
+    int NC =11;
     String file_to_read = "/home/addie/current/tsplib/eil51.tsp";
     Population p = new Population(NUMBER_OF_FACILITES, POPULATION_SIZE, NC, file_to_read); //number of points, population size
     
@@ -18,9 +18,9 @@ public class Main {
       }
       System.out.println();
     }
-//    
-//    //customers allocation per facility
-//    System.out.println("\nCustomers per facility: \n");
+    
+    //customers allocation per facility
+    System.out.println("\nCustomers per facility: \n");
     for(int i = 0; i < NUMBER_OF_FACILITES; i++){
       System.out.print(i + " ");
     }
